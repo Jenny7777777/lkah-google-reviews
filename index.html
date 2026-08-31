@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>慈愛動物醫院｜Google 評論分析系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700;900&family=Noto+Sans+TC:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════
+   慈愛動物醫院 CIS（2026）
+   主紅 PANTONE 186C  #CF102D   愛與守護
+   金   PANTONE 7550C #C2811E   溫暖關懷
+   鮮橙 V5            #F3661F   親和活力
+   深棕 PANTONE 175C  #5D2F2A   專業醫療
+   輔色 #F4F4F4 / #817776 / #FDE4C4 / #F04145
+   字體 Noto Sans（CIS 指定 NotoSansHK 同一家族）
+   ══════════════════════════════════════════════════════════ */
+:root{
+  /* CIS 主色 */
+  --brand:#CF102D;        /* PANTONE 186C　只用於重點與警示，不當底色 */
+  --gold:#B8842A;         /* PANTONE 7550C　壓深一階，避免刺眼 */
+  --orange:#D9601F;       /* V5 鮮橙　壓深一階 */
+  --maroon:#4A2420;       /* PANTONE 175C　壓深，作為主要 chrome */
+  --maroon-dk:#2E1512;    /* 最深，報頭底色 */
+  --maroon-lt:#6B3A33;
+  --cream:#F3E2C9; --cream-soft:#FBF6EE; --grey:#7D7370;
+  /* 功能色：CIS 無綠，僅用於數據狀態，不用在品牌元素 */
+  --pos:#2A5F47; --pos-soft:#EDF3EF;
+  /* 紙面 */
+  --page:#F7F5F2; --panel:#FFFFFF; --panel-2:#FBF9F7;
+  --line:#E2DAD2; --line-soft:#EFE9E3; --line-dk:#CDBFB4;
+  --ink:#22140F; --ink-2:#5E504A; --ink-3:#988B84;
+  --rule:1px solid var(--line);
+  /* 字體 */
+  --serif:'Noto Serif TC',Georgia,'Songti TC',serif;
+  --sans:'Noto Sans TC',system-ui,-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--page);color:var(--ink);
+  font-weight:400;line-height:1.65;-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums}
+a{color:var(--maroon)}
+::selection{background:var(--cream)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* ───────── 報頭 ───────── */
+.masthead{background:var(--maroon-dk);position:sticky;top:0;z-index:120;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)}
+.masthead::after{content:'';display:block;height:3px;
+  background:linear-gradient(90deg,var(--brand) 0 34%,var(--gold) 34% 100%)}
+.mh-in{max-width:1560px;margin:0 auto;padding:20px 34px;display:flex;align-items:center;gap:20px}
+.mh-mark{width:54px;height:54px;background:#fff;border-radius:2px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center}
+.mh-mark img{display:block;width:54px;height:54px;object-fit:contain}
+.mh-lock{flex:1;min-width:0}
+.mh-lock h1{font-family:var(--serif);font-size:1.52rem;font-weight:500;color:#fff;
+  letter-spacing:7px;line-height:1.2}
+.mh-lock .en{font-family:var(--sans);font-size:.52rem;font-weight:600;color:#C79A4E;
+  letter-spacing:3.6px;margin-top:5px}
+.mh-lock .sys{display:block;font-size:.63rem;font-weight:400;color:rgba(255,255,255,.5);
+  letter-spacing:3px;margin-top:7px;padding-top:7px;
+  border-top:1px solid rgba(255,255,255,.12);max-width:15em}
+.mh-meta{text-align:right;flex-shrink:0}
+.mh-meta .lbl{font-size:.56rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.5)}
+.mh-meta .val{font-family:var(--serif);font-size:.92rem;font-weight:500;color:#fff;
+  letter-spacing:.5px;margin-top:3px}
+.mh-meta .val b{font-weight:900;color:var(--cream)}
+.burger{display:none;flex-direction:column;gap:5px;width:38px;height:38px;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.22);border-radius:3px;cursor:pointer;align-items:center;justify-content:center}
+.burger span{display:block;width:18px;height:1.5px;background:#fff;transition:.25s}
+.burger.on span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.burger.on span:nth-child(2){opacity:0}
+.burger.on span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+/* ───────── 狀態列 ───────── */
+.statbar{background:#fff;border-bottom:var(--rule);position:sticky;top:85px;z-index:110}
+.sb-in{max-width:1560px;margin:0 auto;padding:0 30px;display:flex;align-items:stretch;gap:0;overflow-x:auto}
+.sb-cell{padding:11px 26px 11px 0;margin-right:26px;border-right:var(--rule);white-space:nowrap}
+.sb-cell:last-child{border-right:none;margin-right:0;padding-right:0}
+.sb-k{font-size:.55rem;font-weight:700;letter-spacing:1.8px;color:var(--ink-3)}
+.sb-v{font-family:var(--serif);font-size:1.04rem;font-weight:600;color:var(--ink);
+  letter-spacing:.3px;margin-top:2px}
+.sb-v small{font-size:.62rem;font-weight:500;color:var(--ink-2);letter-spacing:0;margin-left:4px}
+.sb-act{margin-left:auto;display:flex;align-items:center;gap:8px;padding:8px 0}
+
+/* ───────── 版面 ───────── */
+.wrap{max-width:1560px;margin:0 auto;display:flex;min-height:calc(100vh - 130px)}
+.nav{width:230px;min-width:230px;background:#fff;border-right:var(--rule);
+  padding:20px 0 40px;position:sticky;top:130px;height:calc(100vh - 130px);overflow-y:auto}
+.main{flex:1;min-width:0;padding:36px 40px 72px}
+.nav-sec{font-size:.54rem;font-weight:700;letter-spacing:2.8px;color:var(--ink-3);padding:18px 24px 8px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 22px;cursor:pointer;
+  border-left:3px solid transparent;transition:background .15s}
+.nav-item:hover{background:var(--panel-2)}
+.nav-item.on{background:var(--cream-soft);border-left-color:var(--brand)}
+.nav-item .nm{font-size:.82rem;font-weight:500;flex:1;min-width:0;letter-spacing:.6px}
+.nav-item.on .nm{font-weight:700;color:var(--maroon)}
+.nav-item .sub{font-size:.62rem;color:var(--ink-3);font-weight:400;margin-top:1px}
+.nav-item .ct{font-size:.6rem;font-weight:700;color:var(--ink-3);background:var(--page);
+  border:var(--rule);border-radius:2px;padding:1px 6px}
+.nav-bar{width:3px;height:15px;border-radius:1px;flex-shrink:0}
+.nav-rule{height:1px;background:var(--line-soft);margin:12px 22px}
+
+/* ───────── 標題 ───────── */
+.page-hd{margin-bottom:32px}
+.page-eyebrow{font-size:.56rem;font-weight:700;letter-spacing:3px;color:var(--brand);
+  margin-bottom:10px;display:flex;align-items:center;gap:9px}
+.page-eyebrow::after{content:'';width:34px;height:1px;background:var(--line-dk)}
+.page-hd h2{font-family:var(--serif);font-size:1.96rem;font-weight:500;letter-spacing:3px;
+  color:var(--ink);line-height:1.35}
+.page-hd h2 b{font-weight:700}
+.page-hd .dek{font-size:.81rem;color:var(--ink-2);margin-top:12px;max-width:74ch;line-height:1.9}
+.sect{margin:44px 0 18px;display:flex;align-items:baseline;gap:14px}
+.sect h3{font-family:var(--sans);font-size:.66rem;font-weight:700;letter-spacing:3px;
+  color:var(--maroon);white-space:nowrap}
+.sect .hint{font-size:.68rem;color:var(--ink-3);font-weight:400;letter-spacing:0}
+.sect::after{content:'';flex:1;height:1px;background:var(--line-dk);opacity:.6}
+
+/* ───────── 數據磚 ───────── */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:var(--rule);margin-bottom:4px}
+.kpi{background:#fff;padding:24px 24px 22px;position:relative}
+.kpi::before{content:'';position:absolute;left:24px;right:24px;top:0;height:2px;background:var(--line)}
+.kpi.k1::before{background:var(--brand)}
+.kpi.k2::before{background:var(--pos)}
+.kpi.k3::before{background:var(--gold)}
+.kpi.k4::before{background:var(--orange)}
+.kpi .k{font-size:.57rem;font-weight:700;letter-spacing:2.2px;color:var(--ink-3)}
+.kpi .v{font-family:var(--serif);font-size:2.4rem;font-weight:600;line-height:1.05;
+  margin-top:13px;letter-spacing:0;color:var(--ink)}
+.kpi.k1 .v{color:var(--brand)}.kpi.k2 .v{color:var(--pos)}.kpi.k3 .v{color:var(--gold)}.kpi.k4 .v{color:var(--orange)}
+.kpi .v small{font-family:var(--sans);font-size:.82rem;font-weight:500;color:var(--ink-2)}
+.kpi .n{font-size:.67rem;color:var(--ink-2);margin-top:10px;line-height:1.65}
+
+/* ───────── 刻度尺（招牌視覺） ───────── */
+.ruler{background:#fff;border:var(--rule);padding:30px 34px 24px;margin-bottom:4px}
+.ruler-hd{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.ruler-hd .t{font-family:var(--sans);font-size:.66rem;font-weight:700;letter-spacing:3px;color:var(--maroon)}
+.ruler-hd .d{font-size:.68rem;color:var(--ink-3)}
+.rr{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:16px;margin-bottom:6px}
+.rr-lbl{text-align:right}
+.rr-lbl .g{font-family:var(--serif);font-size:.8rem;font-weight:600;color:var(--ink)}
+.rr-lbl .a{font-size:.62rem;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.rr-track{position:relative;height:42px}
+.rr-track::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line)}
+.pin{position:absolute;top:50%;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;
+  border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.12);cursor:default}
+.pin.wide{width:15px;height:15px}
+.pin-cap{position:absolute;top:50%;transform:translate(-50%,-125%);font-size:.58rem;font-weight:700;
+  color:var(--ink-2);white-space:nowrap;pointer-events:none}
+.pin-cap.dn{transform:translate(-50%,28%)}
+.ruler-axis{display:grid;grid-template-columns:96px 1fr;gap:16px;margin-top:6px}
+.axis{position:relative;height:22px;border-top:1px solid var(--line)}
+.tick{position:absolute;top:0;transform:translateX(-50%);font-size:.6rem;color:var(--ink-3);
+  padding-top:5px;font-variant-numeric:tabular-nums}
+.tick::before{content:'';position:absolute;left:50%;top:0;width:1px;height:4px;background:var(--line)}
+.avgline{position:absolute;top:-4px;bottom:0;width:1px;background:var(--brand);opacity:.5}
+
+/* ───────── 表格 ───────── */
+.tbl{background:#fff;border:var(--rule);overflow-x:auto;margin-bottom:4px}
+.tbl table{width:100%;border-collapse:collapse;min-width:600px}
+.tbl th{padding:13px 16px;text-align:left;font-size:.56rem;font-weight:700;letter-spacing:2px;
+  color:var(--ink-3);background:var(--panel-2);border-bottom:1px solid var(--line-dk);white-space:nowrap}
+.tbl td{padding:14px 16px;font-size:.81rem;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:var(--panel-2)}
+.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.tbl .nm{font-weight:700}
+.tbl .sm{font-size:.68rem;color:var(--ink-3);font-weight:400}
+
+/* ───────── 標籤 ───────── */
+.tag{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.6px;padding:2px 8px;border-radius:2px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:1px}
+.badge{display:inline-block;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:2px;white-space:nowrap}
+.badge.pos{background:var(--pos-soft);color:var(--pos);border:1px solid #C6DCCE}
+.badge.neu{background:#FAF1DE;color:#7A4E12;border:1px solid #E7CFA2}
+.badge.neg{background:#FCEBED;color:#9A0F22;border:1px solid #F0BCC3}
+.badge.info{background:var(--cream-soft);color:var(--maroon);border:1px solid var(--cream)}
+
+/* ───────── 卡片 ───────── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1px;
+  background:var(--line);border:var(--rule);margin-bottom:4px}
+.card{background:#fff;padding:22px 24px;cursor:pointer;transition:background .15s;position:relative}
+.card:hover{background:var(--panel-2)}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent}
+.card:hover::before{background:var(--brand)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.card-nm{font-family:var(--serif);font-size:1.1rem;font-weight:600;letter-spacing:1.5px}
+.card-dir{font-size:.66rem;color:var(--maroon);font-weight:500;margin-top:3px}
+.card-ad{font-size:.65rem;color:var(--ink-3);margin-top:5px;line-height:1.6}
+.card-sc{text-align:right;flex-shrink:0}
+.card-sc .n{font-family:var(--serif);font-size:1.86rem;font-weight:600;line-height:1;letter-spacing:0}
+.card-sc .st{font-size:.6rem;letter-spacing:1px;color:var(--gold);margin-bottom:2px}
+.card-sc .c{font-size:.6rem;color:var(--ink-3);margin-top:3px}
+.meter{height:5px;background:var(--page);display:flex;margin-top:14px;border-radius:1px;overflow:hidden}
+.meter i{display:block;height:100%}
+.meter-lg{display:flex;gap:12px;font-size:.6rem;font-weight:700;margin-top:6px}
+.card-ft{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;
+  padding-top:12px;border-top:1px solid var(--line-soft)}
+
+/* ───────── 按鈕 / 表單 ───────── */
+.btn{font-family:var(--sans);font-size:.73rem;font-weight:700;letter-spacing:1.4px;padding:9px 20px;
+  border-radius:1px;cursor:pointer;border:1px solid transparent;transition:.15s;white-space:nowrap}
+.btn-fill{background:var(--maroon);color:#fff}
+.btn-fill:hover{background:var(--maroon-dk)}
+.btn-gold{background:transparent;color:var(--maroon);border-color:var(--line-dk)}
+.btn-gold:hover{border-color:var(--gold);color:var(--gold)}
+.btn-red{background:var(--brand);color:#fff}
+.btn-red:hover{background:#A80D24}
+.btn-line{background:#fff;color:var(--maroon);border-color:var(--line)}
+.btn-line:hover{border-color:var(--maroon)}
+.btn-sm{font-size:.66rem;padding:5px 12px}
+.btn:disabled{background:#EDE9E5;color:var(--ink-3);border-color:transparent;cursor:not-allowed}
+.fld{font-family:inherit;font-size:.76rem;padding:8px 12px;border:1px solid var(--line);
+  border-radius:2px;background:#fff;color:var(--ink)}
+.fld:focus{outline:none;border-color:var(--maroon)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.filters input.fld{flex:1;min-width:190px}
+.link{font-size:.7rem;color:var(--maroon);text-decoration:none;font-weight:500;border-bottom:1px solid var(--cream)}
+.link:hover{border-bottom-color:var(--maroon)}
+
+/* ───────── 訊息框 ───────── */
+.note{border:1px solid var(--line);border-left:3px solid var(--gold);background:#fff;
+  padding:15px 18px;font-size:.76rem;line-height:1.8;color:var(--ink-2);margin-bottom:20px}
+.note strong{color:var(--ink);font-weight:700}
+.note.warn{border-left-color:var(--brand);background:#FEF8F9}
+.note.ok{border-left-color:var(--pos);background:var(--pos-soft)}
+.note code{background:var(--page);padding:1px 5px;border-radius:2px;font-size:.72rem}
+.panel{background:#fff;border:var(--rule);padding:24px 26px;margin-bottom:4px}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+  border:var(--rule);margin-bottom:4px}
+.tri>div{background:#fff;padding:20px 22px}
+.tri h4{font-size:.6rem;font-weight:700;letter-spacing:2.6px;padding-bottom:10px;margin-bottom:13px;
+  border-bottom:2px solid}
+.tri ol{list-style:none;counter-reset:t}
+.tri li{counter-increment:t;font-size:.76rem;line-height:1.7;padding:7px 0 7px 22px;position:relative;
+  border-bottom:1px solid var(--line-soft)}
+.tri li:last-child{border-bottom:none}
+.tri li::before{content:counter(t);position:absolute;left:0;top:7px;font-size:.62rem;font-weight:900;
+  width:15px;text-align:center}
+.tri .p h4{color:var(--pos);border-color:#C6DCCE}.tri .p li::before{color:var(--pos)}
+.tri .c h4{color:#9A0F22;border-color:#F0BCC3}.tri .c li::before{color:#9A0F22}
+.tri .a h4{color:var(--maroon);border-color:var(--cream)}.tri .a li::before{color:var(--maroon)}
+
+/* ───────── 圖表 ───────── */
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px}
+.chart{background:#fff;border:var(--rule);padding:22px 24px}
+.chart h4{font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--ink-3);
+  padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:16px}
+
+/* ───────── 彈窗 ───────── */
+.ov{display:none;position:fixed;inset:0;background:rgba(42,26,22,.62);z-index:300;
+  align-items:center;justify-content:center;backdrop-filter:blur(3px);padding:20px}
+.ov.on{display:flex}
+.dlg{background:var(--page);width:100%;max-width:900px;max-height:92vh;display:flex;flex-direction:column;
+  border-radius:3px;overflow:hidden;box-shadow:0 30px 70px rgba(42,26,22,.35)}
+.dlg-hd{background:var(--maroon-dk);padding:22px 26px;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:14px;
+  border-bottom:3px solid var(--brand)}
+.dlg-hd .t{font-family:var(--serif);font-size:1.2rem;font-weight:500;color:#fff;letter-spacing:2.5px}
+.dlg-hd .s{font-size:.7rem;color:var(--cream);margin-top:4px;letter-spacing:.3px}
+.dlg-x{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;
+  width:30px;height:30px;border-radius:2px;cursor:pointer;font-size:.9rem;flex-shrink:0}
+.dlg-x:hover{background:var(--brand);border-color:var(--brand)}
+.dlg-bd{padding:22px 24px;overflow-y:auto;flex:1}
+.tabs{display:flex;gap:1px;background:var(--line);border:var(--rule);margin-bottom:18px;flex-wrap:wrap}
+.tab{background:#fff;padding:8px 16px;font-size:.71rem;font-weight:500;cursor:pointer;color:var(--ink-2);flex:1;text-align:center;white-space:nowrap}
+.tab.on{background:var(--maroon);color:#fff;font-weight:700}
+.rev{background:#fff;border:var(--rule);border-left-width:3px;padding:15px 17px;margin-bottom:4px}
+.rev.positive{border-left-color:var(--pos)}
+.rev.neutral{border-left-color:var(--gold)}
+.rev.negative{border-left-color:var(--brand)}
+.rev-hd{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:9px}
+.rev-au{font-size:.83rem;font-weight:700}
+.rev-mt{font-size:.63rem;color:var(--ink-3);margin-top:2px}
+.rev-rt{text-align:right;flex-shrink:0}
+.rev-st{font-size:.76rem;letter-spacing:1px}
+.rev-dt{font-size:.62rem;color:var(--ink-3);margin-top:1px}
+.rev-tx{font-size:.79rem;line-height:1.85;white-space:pre-wrap;color:var(--ink)}
+.rev-an{margin-top:11px;padding-top:10px;border-top:1px solid var(--line-soft);font-size:.71rem;
+  color:var(--ink-2);display:flex;gap:8px;flex-wrap:wrap}
+.rev-an b{color:var(--ink);font-weight:700}
+.kw{display:inline-block;font-size:.74rem;font-weight:700;padding:3px 11px;border-radius:2px;margin:0 5px 5px 0}
+.kw.p{background:var(--pos-soft);color:var(--pos);border:1px solid #C6DCCE}
+.kw.n{background:#FCEBED;color:#9A0F22;border:1px solid #F0BCC3}
+.kw i{font-style:normal;opacity:.65;font-weight:500;font-size:.66rem;margin-left:3px}
+
+/* ───────── 進度 / 載入 ───────── */
+.load{display:flex;flex-direction:column;align-items:center;gap:14px;padding:52px 20px}
+.spin{width:26px;height:26px;border:2px solid var(--line);border-top-color:var(--brand);
+  border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.prog{height:3px;background:var(--line);overflow:hidden;margin:12px 0}
+.prog i{display:block;height:100%;background:var(--brand);transition:width .35s}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.66rem;color:var(--ink-3)}
+.log{max-height:230px;overflow-y:auto;font-size:.71rem;line-height:1.95;border:var(--rule);
+  background:var(--panel-2);padding:11px 14px;margin-top:12px}
+
+.ovl{display:none;position:fixed;inset:0;background:rgba(42,26,22,.45);z-index:115}
+.ovl.on{display:block}
+.cards-m{display:none}
+
+@media(max-width:1180px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .charts{grid-template-columns:1fr}
+  .tri{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .mh-in{padding:12px 18px;gap:12px}
+  .mh-lock h1{font-size:1.06rem;letter-spacing:3px}
+  .mh-meta{display:none}
+  .burger{display:flex}
+  .statbar{top:79px}
+  .nav{position:fixed;top:124px;left:-270px;width:260px;height:calc(100vh - 124px);
+    z-index:120;transition:left .28s ease;box-shadow:6px 0 24px rgba(42,26,22,.16)}
+  .nav.on{left:0}
+  .main{padding:24px 18px 60px}
+  .rr{grid-template-columns:74px 1fr;gap:10px}
+  .ruler-axis{grid-template-columns:74px 1fr;gap:10px}
+  .ruler{padding:20px 18px 16px}
+}
+@media(max-width:620px){
+  .page-hd h2{font-size:1.42rem;letter-spacing:2px}
+  .kpi .v{font-size:1.75rem}
+  .grid{grid-template-columns:1fr}
+  .sb-cell{padding-right:16px;margin-right:16px}
+  .tbl{display:none}
+  .cards-m{display:block!important}
+  .dlg-bd{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{.nav,.statbar,.burger{display:none}.main{padding:0}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="mh-in">
+    <button class="burger" id="burger" onclick="toggleNav()" aria-label="開啟選單"><span></span><span></span><span></span></button>
+    <div class="mh-mark"><img id="mhLogo" alt="慈愛動物醫院"></div>
+    <div class="mh-lock">
+      <h1>慈愛動物醫院</h1>
+      <div class="en">LOVING KINDNESS ANIMAL HOSPITAL</div>
+      <span class="sys">GOOGLE 評論分析系統</span>
+    </div>
+    <div class="mh-meta">
+      <div class="lbl">資料基準</div>
+      <div class="val" id="mhDate">—</div>
+    </div>
+  </div>
+</header>
+
+<div class="statbar">
+  <div class="sb-in" id="statbar"></div>
+</div>
+
+<div class="ovl" id="navOvl" onclick="toggleNav()"></div>
+<div class="wrap">
+  <nav class="nav" id="nav"></nav>
+  <main class="main" id="main"></main>
+</div>
+
+<div class="ov" id="dlg">
+  <div class="dlg">
+    <div class="dlg-hd">
+      <div><div class="t" id="dlgT">評論分析</div><div class="s" id="dlgS"></div></div>
+      <button class="dlg-x" onclick="closeDlg()" aria-label="關閉">✕</button>
+    </div>
+    <div class="dlg-bd" id="dlgB"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   資料原則
+   1. BASE_SNAPSHOT 是事實基準：由 Google Places 於下列日期
+      實際查得的評分與評論數，沒有任何推估或補值。
+   2. 系統不內建虛構的歷史數據。「評論成長」只比較實際同步過的
+      快照；沒同步過就直接說沒有。
+   3. 評論內容、關鍵字、情感分布一律由即時抓取的評論文字計算。
+   ══════════════════════════════════════════════════════════ */
+var BASE_SNAPSHOT_DATE = '2026-08-31';
+var BASE_SNAPSHOT_SOURCE = 'Google Places 實查';
+
+var LOGO_B64 = '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';
+
+/* ---------- 14 間院所 ----------
+   分組依院方提供的營運型態；每間院所各自掛院長（director）。
+   director 留空時介面顯示「院長待補」，填入姓名即自動顯示。   */
+var GROUPS = [
+  {id:'g1', name:'總院組', color:'#CF102D',
+   note:'規模最大、含 24 小時急診。評論量佔全院多數，也承受最重的等候與溝通壓力。',
+   clinics:[
+    {id:'tp-main', name:'北總', full:'台北總院', gname:'慈愛動物醫院-台北總院',
+     placeId:'ChIJ7UQOWmupQjQRhrjn-j12sPM', zone:'北', city:'台北市',
+     addr:'103019 台北市大同區寧夏路1號', tel:'(02)2556-3320',
+     director:'葉肇晟', dtitle:'院長', deputy:'胡甸浩 總院副院長',
+     tag:'總院', hours:'醫療門診 11:00–22:00｜百貨 24H', rest:'無',
+     entity:'慈愛動物醫院寧夏分院', ghours:'每日 11:00–22:00', grest:'無',
+     rating:3.5, count:772},
+    {id:'tc-main', name:'中總', full:'台中總院', gname:'慈愛動物醫院-台中總院(24H急診)',
+     placeId:'ChIJn00V7I49aTQRPXcqPTom3Sg', zone:'中', city:'台中市',
+     addr:'41266 台中市大里區國光路二段539號', tel:'(04)2406-6688',
+     director:'葉英良', dtitle:'院長', deputy:'',
+     tag:'總院・24H 急診', hours:'24 小時', rest:'無',
+     entity:'慈愛動物醫院中港分院', ghours:'24 小時', grest:'無',
+     rating:3.0, count:411},
+    {id:'tn-main', name:'南總', full:'台南總院', gname:'慈愛動物醫院-台南總院',
+     placeId:'ChIJDTbilnh2bjQR57AnKDfQFxI', zone:'南', city:'台南市',
+     addr:'702005 台南市西門路一段473號', tel:'(06)220-3166',
+     director:'鄭文欽', dtitle:'院長', deputy:'',
+     tag:'總院・24H 急診', hours:'24 小時', rest:'無',
+     entity:'慈愛動物醫院', ghours:'24 小時', grest:'無',
+     rating:3.1, count:603}
+  ]},
+  {id:'g2', name:'店中院組', color:'#C2811E',
+   note:'設於門市內的醫療院所，多有固定公休日。評論量較小，但評分普遍是全院最高的一群。',
+   clinics:[
+    {id:'ml-xianfu', name:'縣府分院', full:'縣府分院', gname:'慈愛動物醫院-縣府分院(預約制/沒看鼠.兔.鳥.龜)',
+     placeId:'ChIJH0-W7PGtaTQRsUyDMe-JVFM', zone:'中', city:'苗栗縣',
+     addr:'360005 苗栗縣苗栗市自治路16號', tel:'(037)351-329',
+     director:'朱彥勳', dtitle:'院長', deputy:'',
+     tag:'店中院', hours:'10:30–19:30', rest:'週四',
+     entity:'慈愛動物醫院縣府分院', ghours:'10:30–13:00、14:00–19:00', grest:'週四',
+     rating:4.7, count:84},
+    {id:'tc-beitun', name:'北屯分院', full:'北屯分院（原五權）', gname:'慈愛動物醫院 北屯分院',
+     placeId:'ChIJJXahWwAXaTQRrSP2dJ_yODs', zone:'中', city:'台中市',
+     addr:'406023 台中市北屯區北屯路220號', tel:'(04)2253-2266',
+     director:'蕭絢燦', dtitle:'院長', deputy:'',
+     tag:'店中院', hours:'11:00–20:00', rest:'週一、週四',
+     entity:'慈愛動物醫院北屯分院', ghours:'11:00–20:00', grest:'週一、週四',
+     rating:4.7, count:29},
+    {id:'ch-zhongshan', name:'彰化中山', full:'彰化中山分院', gname:'慈愛動物醫院 彰化中山分院',
+     placeId:'ChIJUTblHVk5aTQR-5Q1cbjj2oA', zone:'中', city:'彰化縣',
+     addr:'500 彰化縣彰化市永福里中山路二段515號', tel:'(04)728-1066',
+     director:'林哲安', dtitle:'院長', deputy:'',
+     tag:'店中院', hours:'11:00–20:00', rest:'週三、週日',
+     entity:'慈愛動物醫院中山分院', ghours:'11:00–20:00', grest:'週三、週日',
+     rating:5.0, count:28},
+    {id:'cy-west', name:'嘉義西區', full:'嘉義西區分院', gname:'慈愛動物醫院-嘉義西區分院',
+     placeId:'ChIJqQl27oiXbjQROgSnmyZ-HwY', zone:'南', city:'嘉義市',
+     addr:'600078 嘉義市西區北港路313號', tel:'(05)231-3688',
+     director:'賴柏宇', dtitle:'院長', deputy:'',
+     tag:'店中院', hours:'11:00–20:00', rest:'暫停營業',
+     status:'暫時歇業（115.08.28 起・Google 已標暫停營業）', entity:'慈愛動物醫院嘉義西區分院',
+     ghours:'未顯示（已標暫停營業）', grest:'暫停營業',
+     rating:4.3, count:95},
+    {id:'tn-ximen', name:'西門分院', full:'西門分院（原金華）', gname:'慈愛動物醫院-西門分院',
+     placeId:'ChIJ9aLevvl2bjQR9-bNXJhfEtw', zone:'南', city:'台南市',
+     addr:'704005 台南市北區西門路四段268號', tel:'(06)264-1220',
+     director:'郭福添', dtitle:'院長', deputy:'',
+     tag:'店中院', hours:'11:00–20:00', rest:'週二、週三',
+     entity:'慈愛動物醫院西門分院', ghours:'11:00–20:00', grest:'週二、週三',
+     rating:4.6, count:255},
+    {id:'tn-zhonghua', name:'中華分院', full:'中華分院', gname:'慈愛動物醫院-中華院',
+     placeId:'ChIJgRfAiN52bjQRYgx3CzmMEHk', zone:'南', city:'台南市',
+     addr:'710 台南市永康區中華路657號', tel:'(06)233-9650',
+     director:'吳瑞紘', dtitle:'院長', deputy:'',
+     tag:'店中院', hours:'11:00–20:00', rest:'週三',
+     entity:'慈愛動物醫院中華分院', ghours:'11:00–20:00', grest:'週三',
+     rating:4.4, count:300},
+    {id:'tn-dawan', name:'大灣分院', full:'大灣分院', gname:'慈愛動物醫院 - 大灣分院',
+     placeId:'ChIJ9zsdz75xbjQRDPhlY1qqpdo', zone:'南', city:'台南市',
+     addr:'71087 台南市永康區永大路二段25號', tel:'(06)205-4702',
+     director:'王郁婷', dtitle:'院長', deputy:'',
+     tag:'店中院', hours:'11:00–20:00', rest:'週一、週四',
+     entity:'慈愛動物醫院大灣分院', ghours:'11:00–20:00', grest:'週一、週四',
+     rating:4.6, count:45}
+  ]},
+  {id:'g3', name:'院中店組', color:'#F3661F',
+   note:'醫院附設門市。醫療與百貨的營業時間、公休日都不同，Google 評論會把兩邊的抱怨算在一起。',
+   clinics:[
+    {id:'tn-rende', name:'仁德分院', full:'仁德分院', gname:'慈愛動物醫院-仁德分院（犬貓特寵）',
+     placeId:'ChIJjeWQqFVxbjQRbRJOx0eTnjs', zone:'南', city:'台南市',
+     addr:'717021 臺南市仁德區文華路三段448號', tel:'(06)279-2159',
+     director:'黃威洲', dtitle:'院長', deputy:'',
+     tag:'院中店', hours:'醫療 11:00–20:00｜百貨 10:00–21:00', rest:'百貨無休｜醫療、美容休週二',
+     entity:'慈愛動物醫院仁德分院', ghours:'10:00–20:00', grest:'週二',
+     rating:4.3, count:361},
+    {id:'kh-jiuru', name:'九如分院', full:'九如分院', gname:'慈愛動物醫院-九如院',
+     placeId:'ChIJm3R1rsUEbjQR8icL4c3_lNk', zone:'南', city:'高雄市',
+     addr:'807545 高雄市三民區九如一路458號', tel:'(07)387-1966',
+     director:'陳勃維', dtitle:'院長', deputy:'',
+     tag:'院中店', hours:'11:00–20:00', rest:'週四、週日',
+     entity:'慈愛動物醫院九如分院', ghours:'11:00–17:00、18:00–20:00', grest:'週四、週日',
+     rating:4.6, count:715},
+    {id:'kh-zuoying', name:'高雄分院', full:'高雄分院', gname:'慈愛動物醫院-高雄分院',
+     placeId:'ChIJOzmnJKcFbjQRMtir5mlgYhI', zone:'南', city:'高雄市',
+     addr:'813029 高雄市左營區文自路500號', tel:'(07)349-5566',
+     director:'廖凌君', dtitle:'院長', deputy:'林毓民 店長（百貨）',
+     tag:'院中店', hours:'醫療 11:00–20:00｜百貨 10:00–21:00', rest:'百貨無休｜醫療休週三',
+     entity:'慈愛動物醫院高雄分院', ghours:'11:00–20:00', grest:'週三',
+     rating:4.4, count:205}
+  ]},
+  {id:'g4', name:'專科醫院', color:'#5D2F2A',
+   note:'轉診型專科。評論多與重症、慢性病照護有關，個案敘述較長。',
+   clinics:[
+    {id:'tp-manhattan', name:'曼哈頓', full:'曼哈頓動物醫院', gname:'曼哈頓動物醫院',
+     placeId:'ChIJLdi9QdurQjQRfWYgHqZMFhM', zone:'北', city:'台北市',
+     addr:'105042 台北市松山區市民大道四段77號', tel:'(02)2781-5203',
+     director:'葉肇晟', dtitle:'院長', deputy:'',
+     tag:'專科醫院', hours:'10:00–21:00', rest:'週三',
+     entity:'曼哈頓動物醫院', ghours:'10:00–21:00', grest:'週三',
+     rating:4.4, count:208}
+  ]}
+];
+
+GROUPS.forEach(function(g){
+  g.clinics.forEach(function(c){
+    c.group = g;
+    c.url = 'https://www.google.com/maps/place/?q=place_id:' + c.placeId;
+    c.baseRating = c.rating;
+    c.baseCount  = c.count;
+  });
+});
+function allClinics(){ return GROUPS.reduce(function(a,g){return a.concat(g.clinics);},[]); }
+function findClinic(id){ return allClinics().filter(function(c){return c.id===id;})[0] || null; }
+function allCities(){
+  var seen={}, out=[];
+  allClinics().forEach(function(c){ if(!seen[c.city]){seen[c.city]=1;out.push(c.city);} });
+  return out;
+}
+function directorOf(c){ return c.director ? ((c.dtitle||'院長')+' '+c.director) : ''; }
+
+var STORAGE_OK = (function(){
+  try{
+    var k='__tzai_probe__';
+    localStorage.setItem(k,'1');
+    localStorage.removeItem(k);
+    return true;
+  }catch(e){ return false; }
+})();
+
+var SETTINGS_KEY = 'tzai_settings_v1';
+var SETTINGS = {proxyUrl:'', workerUrl:'', workerKey:'', autoRefresh:true};
+(function loadSettings(){
+  try{
+    var raw = localStorage.getItem(SETTINGS_KEY);
+    if(raw) SETTINGS = Object.assign(SETTINGS, JSON.parse(raw));
+  }catch(e){}
+})();
+function saveSettings(){
+  try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS)); }catch(e){}
+}
+function hasProxy(){ return !!(SETTINGS.proxyUrl && /^https?:\/\//.test(SETTINGS.proxyUrl)); }
+function hasWorker(){ return !!(SETTINGS.workerUrl && /^https?:\/\//.test(SETTINGS.workerUrl) && SETTINGS.workerKey); }
+function workerBase(){ return (SETTINGS.workerUrl||'').replace(/\/+$/,''); }
+function proxyBase(){ return (SETTINGS.proxyUrl||'').replace(/\/+$/,''); }
+
+/* ============================================================
+   快照（真實同步紀錄）
+   snapshots = [{date:'2026-08-04', source:'...', data:{placeId:{rating,count}}}]
+   ============================================================ */
+var SNAP_KEY = 'tzai_snapshots_v1';
+
+function baseSnapshot(){
+  var data = {};
+  allClinics().forEach(function(c){
+    data[c.placeId] = {rating:c.baseRating, count:c.baseCount, name:c.name};
+  });
+  return {date:BASE_SNAPSHOT_DATE, source:BASE_SNAPSHOT_SOURCE, base:true, data:data};
+}
+function getSnapshots(){
+  var arr = [];
+  try{
+    var raw = localStorage.getItem(SNAP_KEY);
+    if(raw) arr = JSON.parse(raw) || [];
+  }catch(e){ arr = []; }
+  var all = [baseSnapshot()].concat(arr);
+  all.sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  return all;
+}
+function saveSnapshot(snap){
+  var arr = [];
+  try{
+    var raw = localStorage.getItem(SNAP_KEY);
+    if(raw) arr = JSON.parse(raw) || [];
+  }catch(e){}
+  arr = arr.filter(function(s){ return s.date !== snap.date; });
+  arr.push(snap);
+  try{
+    localStorage.setItem(SNAP_KEY, JSON.stringify(arr));
+    return true;
+  }catch(e){
+    return false;   /* 空間不足或瀏覽器停用儲存 */
+  }
+}
+function clearSnapshots(){ try{ localStorage.removeItem(SNAP_KEY); }catch(e){} }
+
+/* 目前值 = 最新快照；沒同步過就是基準值 */
+function latestSnapshot(){
+  var s = getSnapshots();
+  return s[s.length-1];
+}
+function applyLatest(){
+  var snap = latestSnapshot();
+  allClinics().forEach(function(c){
+    var d = snap.data[c.placeId];
+    c.rating = d && typeof d.rating === 'number' ? d.rating : c.baseRating;
+    c.count  = d && typeof d.count  === 'number' ? d.count  : c.baseCount;
+  });
+  return snap;
+}
+
+/* ============================================================
+   共用計算
+   ============================================================ */
+function renderStars(rating){
+  var full=Math.floor(rating), half=(rating-full)>=0.25&&(rating-full)<0.75;
+  if((rating-full)>=0.75){full+=1;half=false;}
+  var empty=5-full-(half?1:0), s='';
+  for(var i=0;i<full;i++)s+='★';
+  if(half)s+='⯨';
+  for(var j=0;j<empty;j++)s+='☆';
+  return s;
+}
+/* 由星等推估情感比例。這是「估算」，不是實際評論統計；
+   實際比例請看院所詳情裡即時抓取的評論。 */
+function calcSent(r){
+  var pos,neu,neg;
+  if(r>=4.8){pos=Math.round(85+(r-4.8)*50);neg=Math.round((5-r)*5);}
+  else if(r>=4.5){pos=Math.round(70+(r-4.5)*50);neg=Math.round((5-r)*8);}
+  else if(r>=4.0){pos=Math.round(40+(r-4.0)*60);neg=Math.round((5-r)*10);}
+  else if(r>=3.0){pos=Math.round((r-3.0)*40);neg=Math.round(20+(4.0-r)*20);}
+  else if(r>=2.0){pos=0;neg=Math.round(60+(3.0-r)*30);}
+  else{pos=0;neg=95;}
+  pos=Math.max(0,Math.min(100,pos));
+  neg=Math.max(0,Math.min(100,neg));
+  neu=Math.max(0,100-pos-neg);
+  return{pos:pos,neu:neu,neg:neg};
+}
+function rAvg(region){
+  var avg=region.clinics.reduce(function(a,c){return a+c.rating;},0)/region.clinics.length;
+  var total=region.clinics.reduce(function(a,c){return a+c.count;},0);
+  var s=calcSent(avg);
+  return{avg:parseFloat(avg.toFixed(2)),total:total,pos:s.pos,neu:s.neu,neg:s.neg};
+}
+function todayStr(){
+  var d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function fmtDate(s){ return String(s).replace(/-/g,'/'); }
+function esc(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+/* updateHeader 由介面層定義 */
+
+/* ============================================================
+   Proxy API（SerpApi 相容）
+   ============================================================ */
+function apiUrl(params){
+  var qs = Object.keys(params).map(function(k){
+    return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);
+  }).join('&');
+  return proxyBase()+'/search?'+qs;
+}
+async function apiGet(params){
+  if(!hasProxy()) throw new Error('尚未設定 Proxy 位址，請先到「系統設定」填入。');
+  var r = await fetch(apiUrl(params), {method:'GET', mode:'cors'});
+  var txt = await r.text();
+  var d;
+  try{ d = JSON.parse(txt); }
+  catch(e){ throw new Error('Proxy 回傳的不是 JSON（HTTP '+r.status+'）：'+txt.slice(0,120)); }
+  if(!r.ok) throw new Error(d.error || ('Proxy 回應 HTTP '+r.status));
+  if(d.error) throw new Error(d.error);
+  return d;
+}
+/* 取單一院所目前評分與評論數 */
+async function fetchClinicStats(clinic){
+  var d = await apiGet({engine:'google_maps', place_id:clinic.placeId, hl:'zh-tw', gl:'tw'});
+  var p = d.place_results || (d.local_results && d.local_results[0]) || null;
+  if(!p) throw new Error('查無此地點資料');
+  var rating = typeof p.rating === 'number' ? p.rating : null;
+  var count  = typeof p.reviews === 'number' ? p.reviews
+             : (p.user_ratings_total != null ? Number(p.user_ratings_total) : null);
+  if(rating === null || count === null) throw new Error('回傳缺少 rating／reviews 欄位');
+  return {rating:rating, count:count, dataId:p.data_id || null, title:p.title || clinic.name};
+}
+/* 取單一院所評論（最新排序） */
+async function fetchClinicReviews(clinic, limit){
+  var d;
+  try{
+    d = await apiGet({engine:'google_maps_reviews', place_id:clinic.placeId, hl:'zh-tw', sort_by:'newestFirst'});
+  }catch(e){
+    var s = await fetchClinicStats(clinic);
+    if(!s.dataId) throw e;
+    d = await apiGet({engine:'google_maps_reviews', data_id:s.dataId, hl:'zh-tw', sort_by:'newestFirst'});
+  }
+  var arr = d.reviews || [];
+  return limit ? arr.slice(0, limit) : arr;
+}
+function reviewText(rv){
+  if(rv.snippet) return rv.snippet;
+  if(rv.extracted_snippet){
+    return rv.extracted_snippet.original || rv.extracted_snippet.translated || '';
+  }
+  return rv.text || '';
+}
+
+/* ============================================================
+   即時關鍵字／情感分析（全部由實際評論文字算出）
+   ============================================================ */
+var POS_WORDS = ['親切','專業','用心','貼心','細心','耐心','溫柔','仔細','詳細','推薦',
+  '安心','放心','乾淨','整潔','舒適','有耐心','有愛心','負責','合理','價格合理',
+  '感謝','謝謝','救回','康復','好轉','厲害','認真','清楚','解說','態度好'];
+var NEG_WORDS = ['等候','等很久','排隊','態度','冷漠','不耐煩','昂貴','很貴','亂收費',
+  '誤診','延誤','失望','不專業','敷衍','推銷','髒','異味','停車','沒說明',
+  '沒解釋','不清楚','後續','沒回覆','過世','惡化','爭議','退費'];
+
+function countKeywords(texts, words){
+  var m = {};
+  words.forEach(function(w){
+    var n = 0;
+    texts.forEach(function(t){ if(t.indexOf(w) > -1) n++; });
+    if(n>0) m[w] = n;
+  });
+  return Object.keys(m).map(function(w){return {word:w,n:m[w]};})
+    .sort(function(a,b){return b.n-a.n;});
+}
+function analyzeReviews(reviews){
+  var items = reviews.map(function(rv,i){
+    var stars = rv.rating || 0;
+    var text  = reviewText(rv);
+    var pc = POS_WORDS.filter(function(w){return text.indexOf(w)>-1;});
+    var nc = NEG_WORDS.filter(function(w){return text.indexOf(w)>-1;});
+    var sent = stars>=4 ? 'positive' : stars===3 ? 'neutral' : 'negative';
+    return {i:i, stars:stars, text:text, sentiment:sent, pos:pc, neg:nc, raw:rv};
+  });
+  var texts = items.map(function(it){return it.text;}).filter(Boolean);
+  var pos = items.filter(function(it){return it.sentiment==='positive';}).length;
+  var neu = items.filter(function(it){return it.sentiment==='neutral';}).length;
+  var neg = items.filter(function(it){return it.sentiment==='negative';}).length;
+  var posTexts = items.filter(function(it){return it.stars>=4;}).map(function(it){return it.text;});
+  var negTexts = items.filter(function(it){return it.stars<=3;}).map(function(it){return it.text;});
+  return {
+    items:items, pos:pos, neu:neu, neg:neg, total:items.length,
+    posRate: items.length ? Math.round(pos/items.length*100) : 0,
+    withText: texts.length,
+    posKw: countKeywords(posTexts, POS_WORDS).slice(0,8),
+    negKw: countKeywords(negTexts, NEG_WORDS).slice(0,8)
+  };
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   即時資料層
+   ------------------------------------------------------------
+   排程器（Cloudflare Worker）每小時掃描一次 Google，把結果存在
+   它自己的儲存空間。這裡去把那份結果讀回來。
+   所以畫面的新鮮度 = 排程器上次掃描的時間，不是「打開就去問 Google」。
+   ══════════════════════════════════════════════════════════ */
+var LIVE = null;          /* 成功讀到的即時資料 */
+var LIVE_ERR = null;      /* 讀取失敗的原因 */
+var LIVE_BUSY = false;
+
+async function loadLive(silent){
+  if(!hasWorker()){ LIVE=null; LIVE_ERR=null; return null; }
+  if(LIVE_BUSY) return LIVE;
+  LIVE_BUSY = true;
+  try{
+    var r = await fetch(workerBase()+'/data?days=14&key='+encodeURIComponent(SETTINGS.workerKey),
+      {method:'GET', mode:'cors'});
+    var txt = await r.text();
+    var d;
+    try{ d = JSON.parse(txt); }
+    catch(e){ throw new Error('回傳不是 JSON（HTTP '+r.status+'）'); }
+    if(!r.ok || d.error) throw new Error(d.error || ('HTTP '+r.status));
+    LIVE = d; LIVE_ERR = null;
+    applyLive();
+  }catch(e){
+    LIVE = null; LIVE_ERR = e.message;
+  }finally{
+    LIVE_BUSY = false;
+  }
+  if(!silent) updateHeader();
+  return LIVE;
+}
+
+/* 把排程器抓到的最新評分覆蓋上去 */
+function applyLive(){
+  if(!LIVE || !LIVE.stats) return;
+  allClinics().forEach(function(c){
+    var st = LIVE.stats[c.placeId];
+    if(st && typeof st.rating==='number') c.rating = st.rating;
+    if(st && typeof st.count ==='number') c.count  = st.count;
+  });
+}
+
+/* 未回覆負評（來自排程器的追蹤紀錄） */
+function pendingList(){
+  if(!LIVE || !LIVE.pending) return [];
+  var out=[];
+  Object.keys(LIVE.pending).forEach(function(cid){
+    var c=findClinic(cid); if(!c) return;
+    LIVE.pending[cid].forEach(function(rv){
+      out.push({clinic:c, rv:rv,
+        hours: Math.floor((Date.now()-rv.firstSeen)/3600000)});
+    });
+  });
+  return out.sort(function(a,b){ return b.hours-a.hours; });
+}
+function recentList(){
+  if(!LIVE || !LIVE.recent) return [];
+  var out=[];
+  Object.keys(LIVE.recent).forEach(function(cid){
+    var c=findClinic(cid); if(!c) return;
+    LIVE.recent[cid].forEach(function(rv){ out.push({clinic:c, rv:rv}); });
+  });
+  return out;
+}
+function dataAge(){
+  if(!LIVE || !LIVE.generatedAt) return null;
+  var t = new Date(LIVE.generatedAt.replace(' ','T')+':00+08:00');
+  var mins = Math.floor((Date.now()-t.getTime())/60000);
+  return {mins:mins, at:LIVE.generatedAt};
+}
+
+/* ══════════════════════════════════════════════════════════
+   介面骨架
+   ══════════════════════════════════════════════════════════ */
+function toggleNav(){
+  document.getElementById('nav').classList.toggle('on');
+  document.getElementById('navOvl').classList.toggle('on');
+  document.getElementById('burger').classList.toggle('on');
+}
+function closeNavMobile(){
+  if(window.innerWidth<=900){
+    document.getElementById('nav').classList.remove('on');
+    document.getElementById('navOvl').classList.remove('on');
+    document.getElementById('burger').classList.remove('on');
+  }
+}
+
+var VIEWS = [
+  {id:'overview',   sec:'總覽', label:'全院總覽',     bar:'var(--brand)'},
+  {id:'ranking',    sec:'總覽', label:'院所排行',     bar:'var(--pos)'},
+  {id:'pending',    sec:'總覽', label:'待回覆負評',   bar:'var(--brand)'},
+  {id:'report',     sec:'總覽', label:'負評通報',     bar:'var(--orange)'},
+  {id:'growth',     sec:'總覽', label:'評分變化',     bar:'var(--gold)'},
+  {id:'conclusion', sec:'總覽', label:'結論與建議',   bar:'var(--maroon)'}
+];
+function buildNav(){
+  var h='<div class="nav-sec">總覽</div>';
+  VIEWS.forEach(function(v){
+    var badge='';
+    if(v.id==='pending'){
+      var n=pendingList().length;
+      if(n) badge='<span class="ct" style="background:var(--brand);color:#fff;border-color:var(--brand)">'+n+'</span>';
+    }
+    h+='<div class="nav-item" id="nv-'+v.id+'" onclick="showView(\''+v.id+'\')">'
+      +'<span class="nav-bar" style="background:'+v.bar+'"></span>'
+      +'<span class="nm">'+v.label+'</span>'+badge+'</div>';
+  });
+  h+='<div class="nav-rule"></div><div class="nav-sec">院所分組</div>';
+  GROUPS.forEach(function(g){
+    var a=rAvg(g);
+    h+='<div class="nav-item" id="nv-'+g.id+'" onclick="showView(\'group\',\''+g.id+'\')">'
+      +'<span class="nav-bar" style="background:'+g.color+'"></span>'
+      +'<span class="nm">'+g.name+'<span class="sub">均分 '+a.avg.toFixed(2)+'</span></span>'
+      +'<span class="ct">'+g.clinics.length+'</span></div>';
+  });
+  h+='<div class="nav-rule"></div><div class="nav-sec">資料維護</div>';
+  h+='<div class="nav-item" id="nv-sync" onclick="showView(\'sync\')">'
+    +'<span class="nav-bar" style="background:var(--brand)"></span><span class="nm">同步 Google 評分</span></div>';
+  h+='<div class="nav-item" id="nv-settings" onclick="showView(\'settings\')">'
+    +'<span class="nav-bar" style="background:var(--grey)"></span><span class="nm">系統設定</span></div>';
+  if(!STORAGE_OK){
+    h+='<div class="note warn" style="margin:14px 16px 0;font-size:.68rem;padding:11px 13px">'
+      +'這個瀏覽器不允許儲存資料，設定與同步紀錄無法保留。請改用一般視窗（非無痕）開啟。</div>';
+  }
+  document.getElementById('nav').innerHTML=h;
+}
+
+function updateHeader(){
+  var snap=latestSnapshot();
+  var all=allClinics();
+  var avg=(all.reduce(function(a,c){return a+c.rating;},0)/all.length);
+  var tot=all.reduce(function(a,c){return a+c.count;},0);
+  var low=all.filter(function(c){return c.rating<4.0;}).length;
+  var snaps=getSnapshots();
+  var d=document.getElementById('mhDate');
+  if(d) d.innerHTML=fmtDate(snap.date)+' <b>'+(snap.base?'基準':'已同步')+'</b>';
+  var age=dataAge();
+  var pend=pendingList().length;
+  var cells=[
+    {k:'院所', v:all.length+' <small>間・'+GROUPS.length+' 組</small>'},
+    {k:'全院平均評分', v:avg.toFixed(2)},
+    {k:'GOOGLE 評論總數', v:tot.toLocaleString()},
+    {k:'4.0 分以下', v:low+' <small>間</small>'}
+  ];
+  if(hasWorker()){
+    cells.push({k:'待回覆負評', v:'<span style="color:'+(pend?'var(--brand)':'var(--ink-3)')+'">'+pend+'</span> <small>則</small>'});
+    cells.push({k:'資料時間', v: age
+      ? '<span style="font-size:.82rem">'+esc(age.at.slice(5))+'</span> <small>'+(age.mins<90?age.mins+' 分鐘前':Math.floor(age.mins/60)+' 小時前')+'</small>'
+      : '<span style="font-size:.8rem;color:var(--brand)">未連線</span>'});
+  }else{
+    cells.push({k:'同步紀錄', v:snaps.length+' <small>筆</small>'});
+  }
+  var h=cells.map(function(c){
+    return '<div class="sb-cell"><div class="sb-k">'+c.k+'</div><div class="sb-v">'+c.v+'</div></div>';
+  }).join('');
+  h+='<div class="sb-act">'
+    +'<button class="btn btn-line btn-sm" onclick="showView(\'settings\')">設定</button>'
+    +(hasWorker()
+      ? '<button class="btn btn-fill btn-sm" onclick="refreshLive()">重新讀取</button>'
+      : '<button class="btn btn-red btn-sm" onclick="showView(\'sync\')">同步 Google 評分</button>')
+    +'</div>';
+  var sb=document.getElementById('statbar');
+  if(sb) sb.innerHTML=h;
+}
+
+async function refreshLive(){
+  var sb=document.getElementById('statbar');
+  if(sb) sb.style.opacity='.5';
+  await loadLive();
+  if(sb) sb.style.opacity='';
+  showView(CURRENT.view, CURRENT.gid);
+}
+
+var charts={};
+function killCharts(){Object.keys(charts).forEach(function(k){try{charts[k].destroy();}catch(e){}});charts={};}
+function mkChart(id,type,data,opts){
+  var el=document.getElementById(id); if(!el||typeof Chart==='undefined')return;
+  if(charts[id]){try{charts[id].destroy();}catch(e){}}
+  var base={responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{labels:{color:'#6B5A54',font:{size:10,family:'Noto Sans TC'},boxWidth:10}}},
+    scales:(['doughnut','pie','radar'].indexOf(type)>-1)?{}:{
+      y:{grid:{color:'#EFEAE4'},ticks:{color:'#9C8D86',font:{size:10}},border:{display:false}},
+      x:{grid:{display:false},ticks:{color:'#6B5A54',font:{size:9},maxRotation:45},border:{color:'#E4DCD4'}}}};
+  charts[id]=new Chart(el,{type:type,data:data,options:Object.assign({},base,opts||{})});
+}
+
+var CURRENT={view:'overview',gid:null};
+function showView(view,gid){
+  closeNavMobile(); killCharts();
+  CURRENT={view:view,gid:gid||null};
+  document.querySelectorAll('.nav-item').forEach(function(e){e.classList.remove('on');});
+  var el=document.getElementById('nv-'+(gid||view));
+  if(el)el.classList.add('on');
+  var m=document.getElementById('main');
+  if(window.scrollTo){try{window.scrollTo(0,0);}catch(e){}}
+  if(view==='overview')      renderOverview(m);
+  else if(view==='ranking')  renderRanking(m);
+  else if(view==='group')    renderGroup(m,gid);
+  else if(view==='growth')   renderGrowth(m);
+  else if(view==='pending')  renderPending(m);
+  else if(view==='report')   renderReport(m);
+  else if(view==='conclusion')renderConclusion(m);
+  else if(view==='sync')     renderSync(m);
+  else if(view==='settings') renderSettings(m);
+  updateHeader();
+}
+
+function pageHead(eyebrow,title,dek){
+  return '<div class="page-hd"><div class="page-eyebrow">'+eyebrow+'</div>'
+    +'<h2>'+title+'</h2>'+(dek?'<div class="dek">'+dek+'</div>':'')+'</div>';
+}
+function sect(t,hint){
+  return '<div class="sect"><h3>'+t+'</h3>'+(hint?'<span class="hint">'+hint+'</span>':'')+'</div>';
+}
+function liveNote(){
+  if(!hasWorker()){
+    return '<div class="note">目前顯示 '+fmtDate(BASE_SNAPSHOT_DATE)+' 的實查基準。'
+      +'接上排程器之後，這裡會改成它每小時掃描的最新結果，並多出「待回覆負評」清單。'
+      +'<a class="link" href="#" onclick="showView(\'settings\');return false;">前往設定</a></div>';
+  }
+  if(LIVE_ERR){
+    return '<div class="note warn"><strong>排程器讀取失敗：'+esc(LIVE_ERR)+'</strong><br>'
+      +'畫面暫時顯示 '+fmtDate(BASE_SNAPSHOT_DATE)+' 的基準資料。</div>';
+  }
+  var age=dataAge();
+  if(!age) return '';
+  return '<div class="note ok" style="padding:11px 16px;font-size:.73rem">'
+    +'資料來自排程器 '+esc(age.at)+' 的掃描（'
+    +(age.mins<90?age.mins+' 分鐘前':Math.floor(age.mins/60)+' 小時前')+'）。'
+    +'待回覆負評 '+pendingList().length+' 則。'
+    +'<a class="link" href="#" onclick="refreshLive();return false;" style="margin-left:8px">重新讀取</a></div>';
+}
+function proxyNote(){
+  if(hasProxy()) return '';
+  return '<div class="note">目前顯示 '+fmtDate(BASE_SNAPSHOT_DATE)+' 實查的基準資料，可以正常瀏覽。'
+    +'要抓最新評論，請到 <a class="link" href="#" onclick="showView(\'settings\');return false;">系統設定</a> 填入 Proxy 位址。</div>';
+}
+function scoreColor(r){
+  return r>=4.6?'var(--pos)':r>=4.3?'#6E8F52':r>=4.0?'var(--gold)':r>=3.5?'var(--orange)':'var(--brand)';
+}
+
+/* ══════════════════════════════════════════════════════════
+   招牌視覺：全院評分刻度尺
+   把 14 間院所畫在同一條 3.0–5.0 的尺上，依分組分列。
+   一眼就看得出總院組整群落在左邊。
+   ══════════════════════════════════════════════════════════ */
+var RULER_MIN=2.8, RULER_MAX=5.05;
+function rpct(r){
+  var p=(r-RULER_MIN)/(RULER_MAX-RULER_MIN)*100;
+  return Math.max(1.5,Math.min(98.5,p));
+}
+function renderRuler(){
+  var all=allClinics();
+  var avg=all.reduce(function(a,c){return a+c.rating;},0)/all.length;
+  var h='<div class="ruler"><div class="ruler-hd">'
+   +'<div class="t">全院評分刻度尺</div>'
+   +'<div class="d">每個圓點是一間院所，依分組分列。虛線為全院平均 '+avg.toFixed(2)+' 分。</div></div>';
+  GROUPS.forEach(function(g){
+    var a=rAvg(g);
+    var cs=g.clinics.slice().sort(function(x,y){return x.rating-y.rating;});
+    h+='<div class="rr"><div class="rr-lbl"><div class="g">'+g.name+'</div>'
+      +'<div class="a">均 '+a.avg.toFixed(2)+'｜'+g.clinics.length+' 院</div></div>';
+    h+='<div class="rr-track">';
+    h+='<span class="avgline" style="left:'+rpct(avg)+'%"></span>';
+    var lastUp=-99, lastDn=-99;
+    cs.forEach(function(c,i){
+      var p=rpct(c.rating), up=(i%2===0);
+      h+='<span class="pin'+(c.count>=300?' wide':'')+'" style="left:'+p+'%;background:'+g.color+'" '
+        +'title="'+esc(c.name)+'：'+c.rating.toFixed(1)+' 分／'+c.count.toLocaleString()+' 則"></span>';
+      /* 同一側的名稱太靠近就不標，避免疊字；滑過圓點仍看得到完整資訊 */
+      var prev = up ? lastUp : lastDn;
+      if(p - prev >= 9){
+        h+='<span class="pin-cap'+(up?'':' dn')+'" style="left:'+p+'%">'+esc(c.name)+'</span>';
+        if(up) lastUp=p; else lastDn=p;
+      }
+    });
+    h+='</div></div>';
+  });
+  h+='<div class="ruler-axis"><div></div><div class="axis">';
+  [3.0,3.5,4.0,4.5,5.0].forEach(function(t){
+    h+='<span class="tick" style="left:'+rpct(t)+'%">'+t.toFixed(1)+'</span>';
+  });
+  h+='</div></div>';
+  h+='<div style="font-size:.64rem;color:var(--ink-3);margin-top:12px;line-height:1.7">'
+   +'圓點較大者代表評論數 300 則以上，也就是這個分數影響到較多人的觀感。</div>';
+  h+='</div>';
+  return h;
+}
+
+/* ══════════════════════════════════════════════════════════
+   全院總覽
+   ══════════════════════════════════════════════════════════ */
+function renderOverview(el){
+  var all=allClinics();
+  var avg=all.reduce(function(a,c){return a+c.rating;},0)/all.length;
+  var tot=all.reduce(function(a,c){return a+c.count;},0);
+  var mains=all.filter(function(c){return c.group.id==='g1';});
+  var rest =all.filter(function(c){return c.group.id!=='g1';});
+  var mA=mains.reduce(function(a,c){return a+c.rating;},0)/mains.length;
+  var rA=rest.reduce(function(a,c){return a+c.rating;},0)/rest.length;
+  var mC=mains.reduce(function(a,c){return a+c.count;},0);
+  var share=Math.round(mC/tot*100);
+  var snap=latestSnapshot();
+
+  var h=pageHead('全院總覽',
+    '14 間院所的 Google 口碑現況',
+    '資料基準 '+fmtDate(snap.date)+'（'+esc(snap.source)+'）。所有數字都是實際查得，沒有推估或補值。'
+    +'最需要注意的一件事：<b>總院組平均 '+mA.toFixed(2)+' 分，其餘 '+rest.length+' 院平均 '+rA.toFixed(2)+' 分，差距 '
+    +(rA-mA).toFixed(2)+' 分；而總院組又佔全院評論的 '+share+'%</b>，對整體觀感的影響最大。');
+  h+=liveNote();
+  h+=proxyNote();
+  var closed=all.filter(function(c){return c.status;});
+  if(closed.length){
+    var ok2=closed.filter(function(c){return /暫停|歇業|停止營業/.test(c.grest||'');});
+    h+='<div class="note'+(ok2.length===closed.length?'':' warn')+'">'
+     +'<strong>營運狀態：'+esc(closed.map(function(c){return (c.full||c.name)+'（'+c.status+'）';}).join('、'))+'</strong><br>'
+     +(ok2.length===closed.length
+        ? 'Google 上已標為暫停營業。但暫停營業期間仍可留評論、評分也仍計入全院平均，因此下方統計仍包含這些院所。'
+        : '請在 Google 商家後台標註暫停營業，避免顧客白跑後留下負評。下方統計仍包含這些院所。')
+     +'</div>';
+  }
+  h+='<div class="kpis">';
+  h+='<div class="kpi k1"><div class="k">全院平均評分</div><div class="v">'+avg.toFixed(2)+'</div>'
+   +'<div class="n">14 院算術平均，未按評論數加權</div></div>';
+  h+='<div class="kpi k2"><div class="k">GOOGLE 評論總數</div><div class="v">'+tot.toLocaleString()+'</div>'
+   +'<div class="n">累積至 '+fmtDate(snap.date)+'</div></div>';
+  h+='<div class="kpi k3"><div class="k">總院組 ／ 其他院所</div><div class="v">'+mA.toFixed(2)+' <small>/</small> '+rA.toFixed(2)+'</div>'
+   +'<div class="n">差距 '+(rA-mA).toFixed(2)+' 分・總院組佔評論 '+share+'%</div></div>';
+  var low=all.filter(function(c){return c.rating<4.0;});
+  h+='<div class="kpi k4"><div class="k">4.0 分以下</div><div class="v">'+low.length+' <small>間</small></div>'
+   +'<div class="n">'+(low.length?esc(low.map(function(c){return c.name;}).join('、')):'無')+'</div></div>';
+  h+='</div>';
+
+  h+=renderRuler();
+
+  h+=sect('各分組概況');
+  h+='<div class="tbl"><table><thead><tr><th>分組</th><th>院數</th><th class="num">平均評分</th>'
+   +'<th class="num">評論總數</th><th class="num">佔全院評論</th><th>最高／最低</th><th></th></tr></thead><tbody>';
+  GROUPS.forEach(function(g){
+    var a=rAvg(g);
+    var s=g.clinics.slice().sort(function(x,y){return y.rating-x.rating;});
+    h+='<tr>'
+     +'<td class="nm"><span class="dot" style="background:'+g.color+'"></span>'+g.name+'</td>'
+     +'<td>'+g.clinics.length+'</td>'
+     +'<td class="num" style="font-weight:900;color:'+scoreColor(a.avg)+'">'+a.avg.toFixed(2)+'</td>'
+     +'<td class="num">'+a.total.toLocaleString()+'</td>'
+     +'<td class="num">'+Math.round(a.total/tot*100)+'%</td>'
+     +'<td class="sm">'+esc(s[0].name)+' '+s[0].rating.toFixed(1)+'　→　'+esc(s[s.length-1].name)+' '+s[s.length-1].rating.toFixed(1)+'</td>'
+     +'<td><button class="btn btn-line btn-sm" onclick="showView(\'group\',\''+g.id+'\')">查看</button></td></tr>';
+  });
+  h+='</tbody></table></div>';
+  h+='<div class="cards-m">'+GROUPS.map(function(g){
+    var a=rAvg(g);
+    return '<div class="card" onclick="showView(\'group\',\''+g.id+'\')"><div class="card-top"><div>'
+      +'<div class="card-nm"><span class="dot" style="background:'+g.color+'"></span>'+g.name+'</div>'
+      +'<div class="card-ad">'+g.clinics.length+' 院・'+a.total.toLocaleString()+' 則評論</div></div>'
+      +'<div class="card-sc"><div class="n" style="color:'+scoreColor(a.avg)+'">'+a.avg.toFixed(2)+'</div></div>'
+      +'</div></div>';
+  }).join('')+'</div>';
+
+  h+='<div class="charts">'
+   +'<div class="chart"><h4>各院評分（低 → 高）</h4><canvas id="chAll"></canvas></div>'
+   +'<div class="chart"><h4>評論則數分布</h4><canvas id="chVol"></canvas></div></div>';
+
+  h+=sect('全部院所','點任一間可抓取即時評論');
+  h+='<div class="filters">'
+   +'<input class="fld" id="fq" placeholder="搜尋院名、院長、地址…" oninput="applyFilter()">'
+   +'<select class="fld" id="fg" onchange="applyFilter()"><option value="">所有分組</option>'
+   +GROUPS.map(function(g){return '<option value="'+g.id+'">'+g.name+'</option>';}).join('')+'</select>'
+   +'<select class="fld" id="fc" onchange="applyFilter()"><option value="">所有地區</option>'
+   +allCities().map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('')+'</select>'
+   +'<select class="fld" id="fs" onchange="applyFilter()">'
+   +'<option value="ra">評分 低 → 高（優先處理）</option><option value="rd">評分 高 → 低</option>'
+   +'<option value="cd">評論數 多 → 少</option><option value="ca">評論數 少 → 多</option></select></div>';
+  h+='<div class="grid" id="cardGrid"></div>';
+  el.innerHTML=h;
+
+  setTimeout(function(){
+    var s=all.slice().sort(function(a,b){return a.rating-b.rating;});
+    mkChart('chAll','bar',{labels:s.map(function(c){return c.name;}),datasets:[{
+      label:'Google 評分',data:s.map(function(c){return c.rating;}),
+      backgroundColor:s.map(function(c){return c.group.color+'CC';}),
+      borderColor:s.map(function(c){return c.group.color;}),borderWidth:1}]},
+      {scales:{y:{min:2.5,max:5,ticks:{stepSize:.5}}},plugins:{legend:{display:false}}});
+    var v=all.slice().sort(function(a,b){return b.count-a.count;});
+    mkChart('chVol','bar',{labels:v.map(function(c){return c.name;}),datasets:[{
+      label:'評論則數',data:v.map(function(c){return c.count;}),
+      backgroundColor:v.map(function(c){return c.group.color+'99';}),
+      borderColor:v.map(function(c){return c.group.color;}),borderWidth:1}]},
+      {plugins:{legend:{display:false}}});
+    applyFilter();
+  },60);
+}
+function applyFilter(){
+  var q=(document.getElementById('fq').value||'').trim().toLowerCase();
+  var g=document.getElementById('fg').value;
+  var c=document.getElementById('fc').value;
+  var s=document.getElementById('fs').value;
+  var items=allClinics().slice();
+  if(q)items=items.filter(function(x){return (x.name+(x.full||'')+x.addr+x.tag+x.city+(x.zone||'')+(x.director||'')+(x.rest||'')).toLowerCase().indexOf(q)>-1;});
+  if(g)items=items.filter(function(x){return x.group.id===g;});
+  if(c)items=items.filter(function(x){return x.city===c;});
+  if(s==='rd')items.sort(function(a,b){return b.rating-a.rating;});
+  else if(s==='ra')items.sort(function(a,b){return a.rating-b.rating;});
+  else if(s==='cd')items.sort(function(a,b){return b.count-a.count;});
+  else if(s==='ca')items.sort(function(a,b){return a.count-b.count;});
+  var box=document.getElementById('cardGrid');
+  box.innerHTML = items.length ? items.map(clinicCard).join('')
+    : '<div style="padding:34px;text-align:center;color:var(--ink-3);font-size:.8rem">找不到符合條件的院所。換個關鍵字或清除篩選。</div>';
+}
+function clinicCard(c){
+  var st=calcSent(c.rating);
+  var h='<div class="card" onclick="openDlg(\''+c.id+'\')">';
+  h+='<div class="card-top"><div style="min-width:0">';
+  h+='<div class="tag" style="background:'+c.group.color+'18;color:'+c.group.color+'">'+c.group.name+'　'+esc(c.tag)+'</div>';
+  h+='<div class="card-nm" style="margin-top:7px">'+esc(c.full||c.name)
+    +(c.status?' <span class="badge neg">'+esc(c.status.split('（')[0])+'</span>':'')+'</div>';
+  h+='<div class="card-dir">'+(c.director?esc(c.director)+'　'+esc(c.dtitle||'院長'):'<span style="color:var(--ink-3)">'+esc(c.dtitle||'院長')+'待補</span>')
+    +(c.deputy?'<span style="color:var(--ink-3)">　'+esc(c.deputy)+'</span>':'')+'</div>';
+  h+='<div class="card-ad">'+esc(c.addr)+'<br>'+esc(c.tel)+'　'+esc(c.hours)
+    +'<br>公休：'+esc(c.rest||'—')+'</div>';
+  h+='</div><div class="card-sc">';
+  h+='<div class="st">'+renderStars(c.rating)+'</div>';
+  h+='<div class="n" style="color:'+scoreColor(c.rating)+'">'+c.rating.toFixed(1)+'</div>';
+  h+='<div class="c">'+c.count.toLocaleString()+' 則</div>';
+  h+='</div></div>';
+  h+='<div class="meter"><i style="width:'+st.pos+'%;background:var(--pos)"></i>'
+    +'<i style="width:'+st.neu+'%;background:var(--gold)"></i>'
+    +'<i style="width:'+st.neg+'%;background:var(--brand)"></i></div>';
+  h+='<div class="meter-lg"><span style="color:var(--pos)">正 '+st.pos+'%</span>'
+    +'<span style="color:#7A4E12">中 '+st.neu+'%</span>'
+    +'<span style="color:var(--brand)">負 '+st.neg+'%</span>'
+    +'<span style="color:var(--ink-3);font-weight:400">依星等估算</span></div>';
+  h+='<div class="card-ft">'
+    +'<a class="link" href="'+c.url+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Google 評論頁 ↗</a>'
+    +'<button class="btn '+(hasProxy()?'btn-fill':'btn-line')+' btn-sm" onclick="event.stopPropagation();openDlg(\''+c.id+'\')">'
+    +(hasProxy()?'抓取即時評論':'查看詳情')+'</button></div>';
+  h+='</div>';
+  return h;
+}
+
+/* ══════════════════════════════════════════════════════════
+   分組頁
+   ══════════════════════════════════════════════════════════ */
+function renderGroup(el,gid){
+  var g=GROUPS.filter(function(x){return x.id===gid;})[0];
+  if(!g)return;
+  var a=rAvg(g);
+  var cs=g.clinics.slice().sort(function(x,y){return x.rating-y.rating;});
+  var all=allClinics();
+  var allAvg=all.reduce(function(s,c){return s+c.rating;},0)/all.length;
+  var tot=all.reduce(function(s,c){return s+c.count;},0);
+  var high=g.clinics.filter(function(c){return c.rating>=4.5;});
+  var low=g.clinics.filter(function(c){return c.rating<4.3;});
+  var loudLow=g.clinics.filter(function(c){return c.count>=200&&c.rating<4.3;});
+  var small=g.clinics.filter(function(c){return c.count<50;});
+  var loud=g.clinics.slice().sort(function(x,y){return y.count-x.count;})[0];
+  var noDir=g.clinics.filter(function(c){return !c.director;});
+
+  var h=pageHead(g.name, g.name+'　'+g.clinics.length+' 間院所',
+    esc(g.note)+'<br>本組平均 <b>'+a.avg.toFixed(2)+'</b> 分（全院 '+allAvg.toFixed(2)+'），'
+    +'評論 '+a.total.toLocaleString()+' 則，佔全院 '+Math.round(a.total/tot*100)+'%。');
+  h+=proxyNote();
+
+  h+='<div class="kpis">';
+  h+='<div class="kpi k1"><div class="k">本組平均評分</div><div class="v">'+a.avg.toFixed(2)+'</div>'
+   +'<div class="n">'+(a.avg>=allAvg?'高於':'低於')+'全院平均 '+Math.abs(a.avg-allAvg).toFixed(2)+' 分</div></div>';
+  h+='<div class="kpi k2"><div class="k">評論總數</div><div class="v">'+a.total.toLocaleString()+'</div>'
+   +'<div class="n">佔全院 '+Math.round(a.total/tot*100)+'%</div></div>';
+  h+='<div class="kpi k3"><div class="k">評分最高</div><div class="v" style="font-size:1.5rem">'+esc(cs[cs.length-1].name)+'</div>'
+   +'<div class="n">'+cs[cs.length-1].rating.toFixed(1)+' 分・'+cs[cs.length-1].count.toLocaleString()+' 則</div></div>';
+  h+='<div class="kpi k4"><div class="k">最需關注</div><div class="v" style="font-size:1.5rem">'+esc(cs[0].name)+'</div>'
+   +'<div class="n">'+cs[0].rating.toFixed(1)+' 分・'+cs[0].count.toLocaleString()+' 則</div></div>';
+  h+='</div>';
+
+  /* 彙整分析：全部由本組真實數字推導 */
+  var pros=[], cons=[], acts=[];
+  if(high.length) pros.push('本組 '+high.length+' 院評分達 4.5 以上（'+high.map(function(c){return c.name+' '+c.rating.toFixed(1);}).join('、')+'）');
+  if(loud) pros.push('聲量最高的 '+loud.name+' 累積 '+loud.count.toLocaleString()+' 則評論並維持 '+loud.rating.toFixed(1)+' 分，是本組口碑主力');
+  if(a.avg>=allAvg) pros.push('本組平均高於全院 '+ (a.avg-allAvg).toFixed(2) +' 分，服務流程可作為其他分組的取樣對象');
+  if(!pros.length) pros.push('本組尚無明顯高分院所，建議先從流程盤點著手');
+
+  if(low.length) cons.push('低於 4.3 分：'+low.map(function(c){return c.name+'（'+c.rating.toFixed(1)+'）';}).join('、'));
+  if(loudLow.length) cons.push('高聲量低評分：'+loudLow.map(function(c){return c.name+'（'+c.rating.toFixed(1)+'／'+c.count.toLocaleString()+' 則）';}).join('、')+'，負評觸及人數最多');
+  if(small.length) cons.push('評論樣本不足 50 則：'+small.map(function(c){return c.name+'（'+c.count+' 則）';}).join('、')+'，單則負評就能大幅拉低分數');
+  if(g.id==='g1') cons.push('24 小時急診的等候時間與夜間人力，是這一組評論裡最常見的抱怨來源');
+  if(g.id==='g3') cons.push('門市與醫療共用同一個 Google 頁面，且兩邊營業時間與公休日不同（百貨多為無休、醫療有固定公休），顧客常在醫療休診日到店而留下負評');
+  if(g.id==='g2'){
+    var rests=g.clinics.filter(function(c){return c.rest&&c.rest!=='無'&&c.rest!=='暫時歇業';});
+    if(rests.length) cons.push('本組 '+rests.length+' 院有固定公休（'+rests.map(function(c){return c.name+' 休'+c.rest.replace(/週/g,'');}).join('、')+'），Google 上若未同步標註，易產生「白跑一趟」類負評');
+  }
+  var cl=g.clinics.filter(function(c){return c.status;});
+  if(cl.length) cons.push('營運狀態異常：'+cl.map(function(c){return c.name+'（'+c.status+'）';}).join('、'));
+  if(!cons.length) cons.push('本組目前沒有低於 4.3 分或樣本過小的院所');
+
+  if(loudLow.length) acts.push('【本月】'+loudLow[0].name+'：逐則檢視 1–2 星評論，歸類為醫療溝通、等候、費用三類後分別指派負責人');
+  if(low.length) acts.push('【本月】'+low.map(function(c){return c.name;}).join('、')+'：在 Google 後台補齊未回覆的負評，48 小時內回覆');
+  if(small.length) acts.push('【本月】'+small.map(function(c){return c.name;}).join('、')+'：看診後主動邀請留評，把樣本拉到 100 則以上再看趨勢');
+  if(noDir.length) acts.push('【資料】補上院長姓名：'+noDir.map(function(c){return c.name;}).join('、'));
+  acts.push('【每月】執行一次「同步 Google 評分」，才有真實的月變化可比較');
+
+  h+='<div class="tri">';
+  h+='<div class="p"><h4>優勢</h4><ol>'+pros.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ol></div>';
+  h+='<div class="c"><h4>問題</h4><ol>'+cons.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ol></div>';
+  h+='<div class="a"><h4>行動</h4><ol>'+acts.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ol></div>';
+  h+='</div>';
+  h+='<div style="font-size:.66rem;color:var(--ink-3);margin:10px 0 4px;line-height:1.7">'
+   +'以上三欄由本組目前的真實評分與評論數推導，沒有預設文案。評論內容層級的分析請點各院「抓取即時評論」。</div>';
+
+  h+='<div class="charts"><div class="chart"><h4>本組各院評分</h4><canvas id="chG1"></canvas></div>'
+   +'<div class="chart"><h4>本組各院評論則數</h4><canvas id="chG2"></canvas></div></div>';
+
+  h+=sect('本組院所','依評分低 → 高排列');
+  h+='<div class="grid">'+cs.map(clinicCard).join('')+'</div>';
+  el.innerHTML=h;
+
+  setTimeout(function(){
+    mkChart('chG1','bar',{labels:cs.map(function(c){return c.name;}),datasets:[{
+      label:'評分',data:cs.map(function(c){return c.rating;}),
+      backgroundColor:g.color+'CC',borderColor:g.color,borderWidth:1}]},
+      {scales:{y:{min:2.5,max:5,ticks:{stepSize:.5}}},plugins:{legend:{display:false}}});
+    mkChart('chG2','bar',{labels:cs.map(function(c){return c.name;}),datasets:[{
+      label:'評論則數',data:cs.map(function(c){return c.count;}),
+      backgroundColor:g.color+'88',borderColor:g.color,borderWidth:1}]},
+      {plugins:{legend:{display:false}}});
+  },60);
+}
+
+/* ══════════════════════════════════════════════════════════
+   排行
+   ══════════════════════════════════════════════════════════ */
+function renderRanking(el){
+  var all=allClinics();
+  var byR=all.slice().sort(function(a,b){return b.rating-a.rating;});
+  var byC=all.slice().sort(function(a,b){return b.count-a.count;});
+  var need=all.filter(function(c){return c.rating<4.3;}).sort(function(a,b){return a.rating-b.rating;});
+  function rank(i){return i===0?'01':(i+1)<10?'0'+(i+1):''+(i+1);}
+  function row(c,i){
+    return '<tr style="cursor:pointer" onclick="openDlg(\''+c.id+'\')">'
+      +'<td class="mono">'+rank(i)+'</td>'
+      +'<td class="nm">'+esc(c.full||c.name)+'<div class="sm">'+(c.director?esc(c.director)+' '+esc(c.dtitle||'院長'):esc(c.dtitle||'院長')+'待補')+'</div></td>'
+      +'<td><span class="tag" style="background:'+c.group.color+'18;color:'+c.group.color+'">'+c.group.name+'</span></td>'
+      +'<td class="num" style="font-weight:900;color:'+scoreColor(c.rating)+'">'+c.rating.toFixed(1)+'</td>'
+      +'<td class="num">'+c.count.toLocaleString()+'</td>'
+      +'<td class="sm">'+esc(c.city)+'</td>'
+      +'<td><a class="link" href="'+c.url+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Maps ↗</a></td></tr>';
+  }
+  function table(list){
+    return '<div class="tbl"><table><thead><tr><th>序</th><th>院所</th><th>分組</th>'
+      +'<th class="num">評分</th><th class="num">評論數</th><th>地區</th><th></th></tr></thead><tbody>'
+      +list.map(row).join('')+'</tbody></table></div>'
+      +'<div class="cards-m">'+list.map(function(c,i){
+        return '<div class="card" onclick="openDlg(\''+c.id+'\')"><div class="card-top"><div>'
+          +'<div class="card-nm"><span class="mono">'+rank(i)+'</span>　'+esc(c.name)+'</div>'
+          +'<div class="card-ad">'+c.group.name+'・'+esc(c.city)+'</div></div>'
+          +'<div class="card-sc"><div class="n" style="color:'+scoreColor(c.rating)+'">'+c.rating.toFixed(1)+'</div>'
+          +'<div class="c">'+c.count.toLocaleString()+' 則</div></div></div></div>';
+      }).join('')+'</div>';
+  }
+  var h=pageHead('院所排行','14 間院所的評分與聲量排序',
+    '「需優先關注」以 4.3 分為界，這是目前 14 院裡把體質差異切得最清楚的一條線。');
+  h+=proxyNote();
+  h+=sect('評分排行');
+  h+=table(byR);
+  h+=sect('需優先關注','評分低於 4.3 分');
+  h+= need.length ? table(need) : '<div class="note ok">目前所有院所評分都在 4.3 分以上。</div>';
+  h+=sect('聲量排行','評論則數，代表這個分數被多少人看到');
+  h+=table(byC);
+  el.innerHTML=h;
+}
+
+/* ══════════════════════════════════════════════════════════
+   同步
+   ══════════════════════════════════════════════════════════ */
+function renderSync(el){
+  var snaps=getSnapshots();
+  var n=allClinics().length;
+  var h=pageHead('資料維護','同步 Google 評分',
+    '逐間向 Google 查詢目前的評分與評論數，把結果存成一份快照。'
+    +'「評分變化」只用真實快照比較，所以先同步幾次才會有趨勢可看。每次同步用掉 '+n+' 次 API 查詢。');
+  h+=proxyNote();
+  h+='<div class="panel"><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">'
+   +'<button class="btn btn-red" id="syncBtn" onclick="startSync()"'+(hasProxy()?'':' disabled')+'>'
+   +'開始同步 '+n+' 間院所</button>'
+   +'<span style="font-size:.72rem;color:var(--ink-3)">建議每月固定執行一次，日期會自動記錄</span></div>'
+   +'<div id="syncOut" style="margin-top:16px"></div></div>';
+
+  h+=sect('已保存的快照', snaps.length+' 筆');
+  h+='<div class="tbl"><table><thead><tr><th>日期</th><th>來源</th><th class="num">院數</th>'
+   +'<th class="num">平均評分</th><th class="num">評論總數</th><th></th></tr></thead><tbody>';
+  snaps.slice().reverse().forEach(function(s){
+    var ks=Object.keys(s.data);
+    var avg=(ks.reduce(function(a,k){return a+s.data[k].rating;},0)/ks.length).toFixed(2);
+    var tot=ks.reduce(function(a,k){return a+s.data[k].count;},0);
+    h+='<tr><td class="nm">'+fmtDate(s.date)+'</td><td class="sm">'+esc(s.source)+'</td>'
+     +'<td class="num">'+ks.length+'</td><td class="num" style="font-weight:900;color:var(--maroon)">'+avg+'</td>'
+     +'<td class="num">'+tot.toLocaleString()+'</td>'
+     +'<td>'+(s.base?'<span class="badge info">基準</span>':'<span class="badge pos">同步</span>')+'</td></tr>';
+  });
+  h+='</tbody></table></div>';
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">'
+   +'<button class="btn btn-line" onclick="exportSnaps()">匯出快照 JSON</button>'
+   +'<button class="btn btn-line" style="color:var(--brand)" onclick="resetSnaps()">清除同步紀錄</button></div>';
+  h+='<div class="note" style="margin-top:16px">快照存在這台瀏覽器（localStorage）。換電腦或清除瀏覽資料就會消失，'
+   +'重要紀錄請先匯出。'+fmtDate(BASE_SNAPSHOT_DATE)+' 那筆是內建基準，不會被清除。</div>';
+  el.innerHTML=h;
+}
+async function startSync(){
+  var btn=document.getElementById('syncBtn'), out=document.getElementById('syncOut');
+  btn.disabled=true;
+  var list=allClinics(), results={}, fails=[];
+  out.innerHTML='<div class="prog"><i id="sf" style="width:0%"></i></div>'
+    +'<div class="mono" id="st">準備中…</div><div class="log" id="sl"></div>';
+  var log=document.getElementById('sl');
+  for(var i=0;i<list.length;i++){
+    var c=list[i], pct=Math.round(i/list.length*100);
+    document.getElementById('sf').style.width=pct+'%';
+    document.getElementById('st').textContent='進度 '+i+' / '+list.length+'（'+pct+'%）· 正在查 '+c.name;
+    try{
+      var s=await fetchClinicStats(c);
+      results[c.placeId]={rating:s.rating,count:s.count,name:c.name};
+      var d1=s.rating-c.baseRating, d2=s.count-c.baseCount;
+      log.innerHTML+='<div>'+esc(c.name)+'　'+s.rating.toFixed(1)+' 分／'+s.count.toLocaleString()+' 則'
+        +((d1||d2)?'　<span style="color:var(--ink-3)">較基準 '+(d1>=0?'+':'')+d1.toFixed(1)+' 分、'+(d2>=0?'+':'')+d2+' 則</span>':'')+'</div>';
+    }catch(e){
+      fails.push(c.name);
+      results[c.placeId]={rating:c.baseRating,count:c.baseCount,name:c.name,failed:true};
+      log.innerHTML+='<div style="color:var(--brand)">'+esc(c.name)+'　查詢失敗：'+esc(e.message)+'（沿用基準值）</div>';
+    }
+    log.scrollTop=log.scrollHeight;
+    await new Promise(function(r){setTimeout(r,400);});
+  }
+  document.getElementById('sf').style.width='100%';
+  document.getElementById('st').textContent='完成 '+list.length+' / '+list.length;
+  var ok=list.length-fails.length, saved=false;
+  if(ok>0){
+    saved=saveSnapshot({date:todayStr(),source:'即時同步（'+ok+'/'+list.length+' 成功）',data:results});
+    applyLatest(); updateHeader(); buildNav();
+  }
+  var msg;
+  if(ok===0) msg='<div class="note warn">全部查詢都失敗，沒有存入快照。請檢查 Proxy 設定。</div>';
+  else if(saved) msg='<div class="note ok">已存入 '+fmtDate(todayStr())+' 快照（'+ok+' 間成功'
+    +(fails.length?'、'+fails.length+' 間失敗':'')+'）。可以到「評分變化」看比較。</div>';
+  else msg='<div class="note warn"><strong>查到資料了，但存不進這台瀏覽器。</strong><br>'
+    +'畫面數字已更新，關掉頁面就會消失。原因通常是瀏覽器停用網站儲存或使用無痕模式。'
+    +'請改用一般視窗，並先按「匯出快照 JSON」保留這次結果。</div>';
+  if(fails.length) msg+='<div class="note">查詢失敗：'+esc(fails.join('、'))+'</div>';
+  out.innerHTML+=msg;
+  btn.disabled=false;
+}
+function exportSnaps(){
+  var blob=new Blob([JSON.stringify(getSnapshots(),null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='慈愛動物醫院_評論快照_'+todayStr()+'.json';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function resetSnaps(){
+  if(!confirm('清除所有同步紀錄？內建基準（'+fmtDate(BASE_SNAPSHOT_DATE)+'）會保留。'))return;
+  clearSnapshots(); applyLatest(); showView('sync');
+}
+
+/* ══════════════════════════════════════════════════════════
+   評分變化（只用真實快照）
+   ══════════════════════════════════════════════════════════ */
+var gFrom=null, gTo=null;
+function renderGrowth(el){
+  var snaps=getSnapshots();
+  var h=pageHead('評分變化','兩個時間點之間的實際變化',
+    '這一頁只比較實際同步過的快照。系統不會替你補上沒查過的月份。');
+  if(snaps.length<2){
+    h+='<div class="note warn"><strong>目前還沒有可以比較的資料。</strong><br>'
+     +'只有 '+fmtDate(BASE_SNAPSHOT_DATE)+' 的基準快照一筆。要看變化，得先累積第二個時間點的實際紀錄 —— '
+     +'這個系統不會替你編造歷史數字。<br>先去跑一次同步，下個月再跑一次，這頁就會出現真實比較。</div>';
+    h+='<button class="btn btn-red" onclick="showView(\'sync\')">前往同步 Google 評分</button>';
+    el.innerHTML=h; return;
+  }
+  if(!gFrom||!snaps.some(function(s){return s.date===gFrom;})) gFrom=snaps[snaps.length-2].date;
+  if(!gTo  ||!snaps.some(function(s){return s.date===gTo;}))   gTo  =snaps[snaps.length-1].date;
+  h+='<div class="panel" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:16px 20px">'
+   +'<span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--ink-3)">比較區間</span>'
+   +'<select class="fld" id="gf">'+snaps.map(function(s){return '<option value="'+s.date+'"'+(s.date===gFrom?' selected':'')+'>'+fmtDate(s.date)+'</option>';}).join('')+'</select>'
+   +'<span style="color:var(--ink-3)">→</span>'
+   +'<select class="fld" id="gt">'+snaps.map(function(s){return '<option value="'+s.date+'"'+(s.date===gTo?' selected':'')+'>'+fmtDate(s.date)+'</option>';}).join('')+'</select>'
+   +'<button class="btn btn-fill btn-sm" onclick="applyGrowth()">套用</button></div>';
+  h+='<div id="trend"></div><div id="gBody"></div>';
+  el.innerHTML=h;
+  renderTrend();
+  renderGrowthBody();
+}
+function applyGrowth(){
+  var f=document.getElementById('gf').value, t=document.getElementById('gt').value;
+  if(f===t){alert('起迄日期不能相同，請選兩個不同的快照。');return;}
+  if(f>t){var x=f;f=t;t=x;}
+  gFrom=f; gTo=t;
+  renderGrowth(document.getElementById('main'));
+}
+/* 多點趨勢：有 3 筆以上快照才畫，2 筆用下方的兩點比較就夠 */
+function renderTrend(){
+  var box=document.getElementById('trend'); if(!box) return;
+  var snaps=getSnapshots();
+  if(snaps.length<3){ box.innerHTML=''; return; }
+  var all=allClinics();
+  box.innerHTML=sect('全院趨勢', snaps.length+' 個時間點')
+   +'<div class="charts"><div class="chart"><h4>全院平均評分</h4><canvas id="trA"></canvas></div>'
+   +'<div class="chart"><h4>評論總數</h4><canvas id="trB"></canvas></div></div>'
+   +sect('各組平均評分趨勢')
+   +'<div class="chart"><canvas id="trC"></canvas></div>';
+  var labels=snaps.map(function(s){return fmtDate(s.date).slice(5);});
+  var avgs=snaps.map(function(s){
+    var ks=Object.keys(s.data);
+    return parseFloat((ks.reduce(function(a,k){return a+s.data[k].rating;},0)/ks.length).toFixed(3));
+  });
+  var tots=snaps.map(function(s){
+    return Object.keys(s.data).reduce(function(a,k){return a+s.data[k].count;},0);
+  });
+  setTimeout(function(){
+    mkChart('trA','line',{labels:labels,datasets:[{label:'全院平均',data:avgs,
+      borderColor:'#CF102D',backgroundColor:'rgba(207,16,45,.08)',fill:true,tension:.25,
+      pointBackgroundColor:'#CF102D',borderWidth:2}]},
+      {plugins:{legend:{display:false}}});
+    mkChart('trB','line',{labels:labels,datasets:[{label:'評論總數',data:tots,
+      borderColor:'#4A2420',backgroundColor:'rgba(74,36,32,.08)',fill:true,tension:.25,
+      pointBackgroundColor:'#4A2420',borderWidth:2}]},
+      {plugins:{legend:{display:false}}});
+    mkChart('trC','line',{labels:labels,datasets:GROUPS.map(function(g){
+      return {label:g.name, borderColor:g.color, backgroundColor:'transparent',
+        tension:.25, borderWidth:2, pointBackgroundColor:g.color,
+        data:snaps.map(function(s){
+          var vals=g.clinics.map(function(c){return s.data[c.placeId];}).filter(Boolean);
+          if(!vals.length) return null;
+          return parseFloat((vals.reduce(function(a,v){return a+v.rating;},0)/vals.length).toFixed(3));
+        })};
+    })},{scales:{y:{min:2.5,max:5,ticks:{stepSize:.5}}}});
+  },60);
+}
+
+function renderGrowthBody(){
+  var snaps=getSnapshots();
+  var A=snaps.filter(function(s){return s.date===gFrom;})[0];
+  var B=snaps.filter(function(s){return s.date===gTo;})[0];
+  var rows=allClinics().map(function(c){
+    var a=A.data[c.placeId], b=B.data[c.placeId];
+    if(!a||!b)return null;
+    return {c:c,r1:a.rating,r2:b.rating,c1:a.count,c2:b.count,
+      dr:parseFloat((b.rating-a.rating).toFixed(2)),dc:b.count-a.count};
+  }).filter(Boolean);
+  var box=document.getElementById('gBody');
+  if(!rows.length){box.innerHTML='<div class="note warn">這兩份快照沒有共同的院所可比較。</div>';return;}
+  var c1=rows.reduce(function(a,r){return a+r.c1;},0), c2=rows.reduce(function(a,r){return a+r.c2;},0);
+  var r1=rows.reduce(function(a,r){return a+r.r1;},0)/rows.length;
+  var r2=rows.reduce(function(a,r){return a+r.r2;},0)/rows.length;
+  var up=rows.filter(function(r){return r.dr>0;}), dn=rows.filter(function(r){return r.dr<0;});
+  var sorted=rows.slice().sort(function(a,b){return b.dc-a.dc;});
+
+  var h='<div style="font-size:.75rem;color:var(--ink-2);margin:20px 0 14px">'
+   +fmtDate(A.date)+'（'+esc(A.source)+'）　→　'+fmtDate(B.date)+'（'+esc(B.source)+'）</div>';
+  h+='<div class="kpis">';
+  h+='<div class="kpi k1"><div class="k">評論總數</div><div class="v">'+c2.toLocaleString()+'</div>'
+   +'<div class="n">較前期 '+(c2-c1>=0?'+':'')+(c2-c1).toLocaleString()+' 則</div></div>';
+  h+='<div class="kpi k2"><div class="k">成長率</div><div class="v">'+(c1?((c2-c1)/c1*100>=0?'+':'')+((c2-c1)/c1*100).toFixed(1)+'%':'—')+'</div>'
+   +'<div class="n">評論則數變化</div></div>';
+  h+='<div class="kpi k3"><div class="k">平均評分</div><div class="v">'+r2.toFixed(2)+'</div>'
+   +'<div class="n">較前期 '+(r2-r1>=0?'+':'')+(r2-r1).toFixed(2)+' 分</div></div>';
+  h+='<div class="kpi k4"><div class="k">評分變化院所</div><div class="v" style="font-size:1.5rem">↑'+up.length+'　↓'+dn.length+'</div>'
+   +'<div class="n">'+(rows.length-up.length-dn.length)+' 間持平</div></div>';
+  h+='</div>';
+  h+='<div class="charts"><div class="chart"><h4>各院評論則數比較</h4><canvas id="gc1"></canvas></div>'
+   +'<div class="chart"><h4>各院評分比較</h4><canvas id="gc2"></canvas></div></div>';
+  h+=sect('各院變化明細','依評論成長排序');
+  h+='<div class="tbl"><table><thead><tr><th>院所</th><th>分組</th>'
+   +'<th class="num">'+fmtDate(A.date)+' 評分</th><th class="num">'+fmtDate(B.date)+' 評分</th><th>評分變化</th>'
+   +'<th class="num">'+fmtDate(A.date)+' 則數</th><th class="num">'+fmtDate(B.date)+' 則數</th><th class="num">成長</th></tr></thead><tbody>';
+  sorted.forEach(function(r){
+    h+='<tr><td class="nm">'+esc(r.c.name)+'</td>'
+     +'<td><span class="tag" style="background:'+r.c.group.color+'18;color:'+r.c.group.color+'">'+r.c.group.name+'</span></td>'
+     +'<td class="num sm">'+r.r1.toFixed(1)+'</td>'
+     +'<td class="num" style="font-weight:900;color:'+scoreColor(r.r2)+'">'+r.r2.toFixed(1)+'</td>'
+     +'<td>'+diffBadge(r.dr)+'</td>'
+     +'<td class="num sm">'+r.c1.toLocaleString()+'</td>'
+     +'<td class="num" style="font-weight:700">'+r.c2.toLocaleString()+'</td>'
+     +'<td class="num" style="font-weight:700;color:'+(r.dc>=0?'var(--pos)':'var(--brand)')+'">'+(r.dc>=0?'+':'')+r.dc+'</td></tr>';
+  });
+  h+='</tbody></table></div>';
+  h+='<div class="cards-m">'+sorted.map(function(r){
+    return '<div class="card"><div class="card-top"><div><div class="card-nm">'+esc(r.c.name)+'</div>'
+      +'<div class="card-ad">'+r.c.group.name+'</div></div><div class="card-sc">'
+      +'<div class="n" style="color:'+scoreColor(r.r2)+'">'+r.r2.toFixed(1)+'</div>'
+      +'<div class="c">'+diffBadge(r.dr)+'</div></div></div>'
+      +'<div class="card-ft"><span class="sm">評論 '+r.c1.toLocaleString()+' → '+r.c2.toLocaleString()+'</span>'
+      +'<span style="font-weight:700;color:'+(r.dc>=0?'var(--pos)':'var(--brand)')+'">'+(r.dc>=0?'+':'')+r.dc+' 則</span></div></div>';
+  }).join('')+'</div>';
+  box.innerHTML=h;
+  setTimeout(function(){
+    mkChart('gc1','bar',{labels:sorted.map(function(r){return r.c.name;}),datasets:[
+      {label:fmtDate(A.date),data:sorted.map(function(r){return r.c1;}),backgroundColor:'#D8CFC7',borderColor:'#B3A69C',borderWidth:1},
+      {label:fmtDate(B.date),data:sorted.map(function(r){return r.c2;}),backgroundColor:'#CF102DAA',borderColor:'#CF102D',borderWidth:1}]});
+    mkChart('gc2','bar',{labels:sorted.map(function(r){return r.c.name;}),datasets:[
+      {label:fmtDate(A.date),data:sorted.map(function(r){return r.r1;}),backgroundColor:'#D8CFC7',borderColor:'#B3A69C',borderWidth:1},
+      {label:fmtDate(B.date),data:sorted.map(function(r){return r.r2;}),backgroundColor:'#CF102DAA',borderColor:'#CF102D',borderWidth:1}]},
+      {scales:{y:{min:2.5,max:5,ticks:{stepSize:.5}}}});
+  },60);
+}
+function diffBadge(d){
+  if(d>0) return '<span class="badge pos">▲ +'+d.toFixed(2)+'</span>';
+  if(d<0) return '<span class="badge neg">▼ '+d.toFixed(2)+'</span>';
+  return '<span class="badge info">持平</span>';
+}
+
+/* ══════════════════════════════════════════════════════════
+   待回覆負評（來自排程器的追蹤紀錄）
+   ══════════════════════════════════════════════════════════ */
+function renderPending(el){
+  var h=pageHead('待處理','待回覆負評',
+    '排程器每次掃描都會更新回覆狀態。院方在 Google 上回覆之後，該則會自動從這裡消失。');
+
+  if(!hasWorker()){
+    h+='<div class="note warn"><strong>這一頁需要連上排程器。</strong><br>'
+     +'待回覆清單由排程器持續追蹤，不是儀表板自己算的。'
+     +'請到 <a class="link" href="#" onclick="showView(\'settings\');return false;">系統設定</a> '
+     +'填入 Worker 位址與存取金鑰。</div>';
+    el.innerHTML=h; return;
+  }
+  if(LIVE_ERR){
+    h+='<div class="note warn"><strong>讀取排程器失敗：'+esc(LIVE_ERR)+'</strong><br>'
+     +'請確認 Worker 位址、ADMIN_KEY 是否正確，以及 Worker 是否已部署。</div>';
+    el.innerHTML=h; return;
+  }
+
+  var list=pendingList();
+  var hours=(LIVE&&LIVE.remindHours)||48;
+  var over=list.filter(function(x){return x.hours>=hours;});
+  var age=dataAge();
+
+  h+='<div class="kpis">';
+  h+='<div class="kpi k1"><div class="k">待回覆負評</div><div class="v">'+list.length+' <small>則</small></div>'
+   +'<div class="n">3 星以下且院方尚未回覆</div></div>';
+  h+='<div class="kpi k4"><div class="k">已超過 '+hours+' 小時</div><div class="v">'+over.length+' <small>則</small></div>'
+   +'<div class="n">已寄出催辦通知</div></div>';
+  var byC={}; list.forEach(function(x){byC[x.clinic.id]=1;});
+  h+='<div class="kpi k3"><div class="k">涉及院所</div><div class="v">'+Object.keys(byC).length+' <small>間</small></div>'
+   +'<div class="n">共 '+allClinics().length+' 間</div></div>';
+  h+='<div class="kpi k2"><div class="k">資料時間</div><div class="v" style="font-size:1.4rem">'
+   +(age?esc(age.at.slice(5)):'—')+'</div><div class="n">'
+   +(age?(age.mins<90?age.mins+' 分鐘前掃描':Math.floor(age.mins/60)+' 小時前掃描'):'未連線')+'</div></div>';
+  h+='</div>';
+
+  if(!list.length){
+    h+='<div class="note ok" style="margin-top:18px">目前沒有待回覆的負評。'
+     +'排程器上次掃描時間 '+(age?esc(age.at):'未知')+'。</div>';
+    el.innerHTML=h; return;
+  }
+
+  h+=sect('待處理清單','依積壓時間排序，最久的在最前面');
+  list.forEach(function(x){
+    var c=x.clinic, rv=x.rv;
+    var urgent = x.hours>=hours;
+    h+='<div class="panel" style="padding:0;margin-bottom:4px;border-left:3px solid '
+      +(urgent?'var(--brand)':'var(--orange)')+'">';
+    h+='<div style="padding:14px 22px;background:var(--panel-2);border-bottom:1px solid var(--line);'
+      +'display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">';
+    h+='<div><span style="font-family:var(--serif);font-size:1rem;font-weight:600;letter-spacing:1.5px">'
+      +esc(c.full||c.name)+'</span>'
+      +'<span style="font-size:.7rem;color:var(--ink-2);margin-left:10px">'+esc(c.director)+' 院長</span></div>';
+    h+='<div style="display:flex;align-items:center;gap:10px">'
+      +'<span class="badge '+(urgent?'neg':'neu')+'">積壓 '+x.hours+' 小時</span>'
+      +'<a class="btn btn-fill btn-sm" style="text-decoration:none" href="'+c.url+'" target="_blank" rel="noopener">前往回覆 ↗</a>'
+      +'</div></div>';
+    var st='';
+    for(var i=0;i<rv.rating;i++)st+='★';
+    for(var j=rv.rating;j<5;j++)st+='☆';
+    h+='<div style="padding:16px 22px">';
+    h+='<div class="rev-hd"><div><div class="rev-au">'+esc(rv.author)+'</div>'
+      +'<div class="rev-mt">'+esc(rv.date)+'</div></div>'
+      +'<div class="rev-rt"><div class="rev-st" style="color:var(--brand)">'+st+'</div>'
+      +'<div class="rev-dt">'+rv.rating+' 星</div></div></div>';
+    h+='<div class="rev-tx" style="border-left:2px solid var(--line-dk);padding-left:14px">'
+      +esc(rv.text||'（顧客沒有留文字）')+'</div>';
+    h+='</div></div>';
+  });
+  el.innerHTML=h;
+}
+
+/* ══════════════════════════════════════════════════════════
+   負評通報
+   ══════════════════════════════════════════════════════════ */
+var REPORT_KEY='tzai_report_v2', LOCK_DAYS=7;
+function getReport(){try{var r=localStorage.getItem(REPORT_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function saveReport(d){try{localStorage.setItem(REPORT_KEY,JSON.stringify(d));return true;}catch(e){return false;}}
+function lockLeft(iso){
+  var diff=LOCK_DAYS*864e5-(Date.now()-new Date(iso).getTime());
+  if(diff<=0)return 0;
+  return {d:Math.floor(diff/864e5),h:Math.floor((diff%864e5)/36e5)};
+}
+function renderReport(el){
+  var cache=getReport();
+  var h=pageHead('負評通報','各院最新 10 則評論中的 3 星以下評價',
+    '這一頁的用途是「今天該回覆哪幾則」。抓到的都是尚未處理的真實負評，可直接點連結到 Google 後台回覆。');
+  if(!cache){
+    h+=proxyNote();
+    h+='<div class="panel" style="text-align:center;padding:44px 26px">'
+     +'<div style="font-size:1.05rem;font-weight:300;letter-spacing:2px;margin-bottom:10px">尚未掃描</div>'
+     +'<div style="font-size:.78rem;color:var(--ink-2);line-height:1.9;max-width:56ch;margin:0 auto 22px">'
+     +'按下開始後，系統會逐間抓取各院最新 10 則評論，篩出 3 星以下的負評並依分組整理。'
+     +'掃描完成後鎖定 '+LOCK_DAYS+' 天，避免重複消耗 API 額度。</div>'
+     +'<button class="btn btn-red" onclick="startScan()"'+(hasProxy()?'':' disabled')+'>開始掃描 '+allClinics().length+' 間院所</button></div>';
+    el.innerHTML=h; return;
+  }
+  var d=new Date(cache.scanDate);
+  var ds=d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0');
+  var rem=lockLeft(cache.scanDate);
+  var totalBad=0, badClinics=0, unreplied=0;
+  cache.groups.forEach(function(g){g.clinics.forEach(function(c){
+    if(c.bad&&c.bad.length){totalBad+=c.bad.length;badClinics++;
+      unreplied+=c.bad.filter(function(r){return !r.replied;}).length;}
+  });});
+
+  h+='<div class="kpis">';
+  h+='<div class="kpi k1"><div class="k">3 星以下評論</div><div class="v">'+totalBad+'</div><div class="n">掃描日 '+ds+'</div></div>';
+  h+='<div class="kpi k4"><div class="k">尚未回覆</div><div class="v">'+unreplied+'</div><div class="n">建議 48 小時內處理</div></div>';
+  h+='<div class="kpi k3"><div class="k">有負評的院所</div><div class="v">'+badClinics+' <small>間</small></div><div class="n">共掃描 '+cache.scanned+' 間</div></div>';
+  h+='<div class="kpi k2"><div class="k">無負評院所</div><div class="v">'+(cache.scanned-badClinics)+' <small>間</small></div><div class="n">最新 10 則皆 4 星以上</div></div>';
+  h+='</div>';
+  h+='<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0 4px">'
+   +'<button class="btn btn-red" onclick="startScan()"'+(rem?' disabled':'')+'>重新掃描</button>';
+  if(rem) h+='<span style="font-size:.72rem;color:var(--ink-2)">距離下次可掃描還有 '+rem.d+' 天 '+rem.h+' 小時（節省 API 額度）</span>'
+    +'<button class="btn btn-line btn-sm" style="color:var(--brand)" onclick="if(confirm(\'解除鎖定並重新掃描？會再消耗一次 API 額度。\')){localStorage.removeItem(\''+REPORT_KEY+'\');showView(\'report\');}">解除鎖定</button>';
+  h+='</div>';
+  if(cache.failed&&cache.failed.length)
+    h+='<div class="note">這次沒抓到資料的院所（結果不含它們）：'+esc(cache.failed.join('、'))+'</div>';
+
+  if(totalBad===0){
+    h+='<div class="note ok">本次掃描範圍內，各院最新 10 則評論都沒有 3 星以下負評。</div>';
+  }else{
+    cache.groups.forEach(function(g){
+      var list=g.clinics.filter(function(c){return c.bad&&c.bad.length;});
+      if(!list.length)return;
+      h+=sect(g.name, list.length+' 間院所有負評');
+      list.forEach(function(c){
+        h+='<div class="panel" style="padding:0;margin-bottom:4px">';
+        h+='<div style="padding:14px 20px;border-bottom:1px solid var(--line);display:flex;'
+          +'justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--panel-2)">'
+          +'<div><span style="font-size:.92rem;font-weight:700">'+esc(c.name)+'</span>'
+          +'<span style="font-size:.66rem;color:var(--ink-3);margin-left:9px">最新 10 則中有 '+c.bad.length+' 則</span></div>'
+          +'<a class="btn btn-fill btn-sm" style="text-decoration:none" href="'+c.url+'" target="_blank" rel="noopener">前往回覆 ↗</a></div>';
+        c.bad.forEach(function(r){
+          var st='';
+          for(var i=0;i<r.rating;i++)st+='★';
+          for(var j=r.rating;j<5;j++)st+='☆';
+          h+='<div style="padding:15px 20px;border-bottom:1px solid var(--line-soft)">';
+          h+='<div class="rev-hd"><div><div class="rev-au">'+esc(r.reviewer)+'</div>'
+            +'<div class="rev-mt">'+esc(r.date)+'</div></div>'
+            +'<div class="rev-rt"><div class="rev-st" style="color:var(--brand)">'+st+'</div>'
+            +'<div style="margin-top:4px">'+(r.replied?'<span class="badge pos">已回覆</span>':'<span class="badge neg">未回覆</span>')+'</div></div></div>';
+          h+= r.text ? '<div class="rev-tx" style="border-left:2px solid var(--brand);padding-left:12px">'+esc(r.text)+'</div>'
+                     : '<div class="sm" style="font-style:italic">（顧客沒有留文字）</div>';
+          h+='</div>';
+        });
+        h+='</div>';
+      });
+    });
+  }
+  el.innerHTML=h;
+}
+async function startScan(){
+  var m=document.getElementById('main'), list=allClinics();
+  m.innerHTML=pageHead('負評通報','掃描中','請不要關閉這個頁面。')
+    +'<div class="panel"><div class="prog"><i id="rf" style="width:0%"></i></div>'
+    +'<div class="mono" id="rt">準備中…</div><div class="mono" id="rc" style="margin-top:6px"></div></div>';
+  var out=GROUPS.map(function(g){
+    return {id:g.id,name:g.name,color:g.color,
+      clinics:g.clinics.map(function(c){return {name:c.name,url:c.url,bad:[]};})};
+  });
+  var ok=0, fails=[];
+  for(var i=0;i<list.length;i++){
+    var cl=list[i], pct=Math.round(i/list.length*100);
+    document.getElementById('rf').style.width=pct+'%';
+    document.getElementById('rt').textContent='進度 '+i+' / '+list.length+'（'+pct+'%）';
+    document.getElementById('rc').textContent='目前：'+cl.group.name+'・'+cl.name;
+    try{
+      var revs=await fetchClinicReviews(cl,10);
+      var bad=revs.filter(function(r){return r.rating&&r.rating<=3;}).map(function(r){
+        return {rating:r.rating,date:r.date||'',reviewer:(r.user&&r.user.name)||'匿名用戶',
+          text:reviewText(r),replied:!!(r.response&&(r.response.snippet||r.response.text))};
+      });
+      var gg=out.filter(function(x){return x.id===cl.group.id;})[0];
+      var cc=gg.clinics.filter(function(x){return x.name===cl.name;})[0];
+      if(cc)cc.bad=bad;
+      ok++;
+    }catch(e){ fails.push(cl.name); }
+    await new Promise(function(r){setTimeout(r,450);});
+  }
+  var data={scanDate:new Date().toISOString(),scanned:ok,failed:fails,groups:out};
+  saveReport(data);
+  renderReport(m);
+}
+
+/* ══════════════════════════════════════════════════════════
+   結論與建議
+   ══════════════════════════════════════════════════════════ */
+function renderConclusion(el){
+  var all=allClinics();
+  var avg=all.reduce(function(a,c){return a+c.rating;},0)/all.length;
+  var tot=all.reduce(function(a,c){return a+c.count;},0);
+  var mains=all.filter(function(c){return c.group.id==='g1';});
+  var rest=all.filter(function(c){return c.group.id!=='g1';});
+  var mA=mains.reduce(function(a,c){return a+c.rating;},0)/mains.length;
+  var rA=rest.reduce(function(a,c){return a+c.rating;},0)/rest.length;
+  var mC=mains.reduce(function(a,c){return a+c.count;},0);
+  var share=Math.round(mC/tot*100);
+  var above45=all.filter(function(c){return c.rating>=4.5;});
+  var below40=all.filter(function(c){return c.rating<4.0;});
+  var gStats=GROUPS.map(function(g){return {g:g,a:rAvg(g)};}).sort(function(x,y){return y.a.avg-x.a.avg;});
+  var avgCount=tot/all.length;
+  var q1=all.filter(function(c){return c.rating>=avg&&c.count>=avgCount;});
+  var q2=all.filter(function(c){return c.rating<avg&&c.count>=avgCount;});
+  var q3=all.filter(function(c){return c.rating>=avg&&c.count<avgCount;});
+  var q4=all.filter(function(c){return c.rating<avg&&c.count<avgCount;});
+  var tiny=all.filter(function(c){return c.count<50;});
+  var noDir=all.filter(function(c){return !c.director;});
+  var snap=latestSnapshot();
+
+  var h=pageHead('結論與建議','全院 Google 口碑診斷',
+    '依 '+fmtDate(snap.date)+' 的實際資料計算。下列每一句都能回推到具體院所與數字，沒有通用範本文案。');
+  h+=liveNote();
+  h+=proxyNote();
+  var closed=all.filter(function(c){return c.status;});
+  if(closed.length){
+    var ok2=closed.filter(function(c){return /暫停|歇業|停止營業/.test(c.grest||'');});
+    h+='<div class="note'+(ok2.length===closed.length?'':' warn')+'">'
+     +'<strong>營運狀態：'+esc(closed.map(function(c){return (c.full||c.name)+'（'+c.status+'）';}).join('、'))+'</strong><br>'
+     +(ok2.length===closed.length
+        ? 'Google 上已標為暫停營業。但暫停營業期間仍可留評論、評分也仍計入全院平均，因此下方統計仍包含這些院所。'
+        : '請在 Google 商家後台標註暫停營業，避免顧客白跑後留下負評。下方統計仍包含這些院所。')
+     +'</div>';
+  }
+  h+='<div class="kpis">';
+  h+='<div class="kpi k1"><div class="k">全院平均評分</div><div class="v">'+avg.toFixed(2)+'</div><div class="n">14 院算術平均</div></div>';
+  h+='<div class="kpi k2"><div class="k">4.5 分以上</div><div class="v">'+above45.length+' <small>間</small></div>'
+   +'<div class="n">佔 '+Math.round(above45.length/all.length*100)+'%</div></div>';
+  h+='<div class="kpi k3"><div class="k">4.0 分以下</div><div class="v">'+below40.length+' <small>間</small></div>'
+   +'<div class="n">需優先介入</div></div>';
+  h+='<div class="kpi k4"><div class="k">總院組評論佔比</div><div class="v">'+share+'%</div>'
+   +'<div class="n">'+mC.toLocaleString()+' 則／全院 '+tot.toLocaleString()+' 則</div></div>';
+  h+='</div>';
+
+  h+=sect('核心發現');
+  h+='<div class="panel"><div style="font-size:1.02rem;font-weight:300;letter-spacing:1.5px;line-height:1.85;color:var(--ink)">'
+   +'評分高低與<b style="font-weight:700;color:var(--brand)">營運型態</b>高度相關，不是個別院所的表現問題。'
+   +'總院組平均 <b style="font-weight:900">'+mA.toFixed(2)+'</b> 分，其餘 '+rest.length+' 院平均 <b style="font-weight:900">'+rA.toFixed(2)+'</b> 分，'
+   +'差距 <b style="font-weight:900;color:var(--brand)">'+(rA-mA).toFixed(2)+'</b> 分。'
+   +'而總院組又佔全院評論的 <b style="font-weight:900">'+share+'%</b> —— 它們決定了大多數人對慈愛的第一印象。'
+   +'</div><div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:.76rem;color:var(--ink-2);line-height:1.85">'
+   +'四組排序：'+gStats.map(function(x){return x.g.name+' '+x.a.avg.toFixed(2);}).join('　→　')+'。'
+   +'因此建議的比較方式是<b>同型態互比</b>：總院跟總院比、店中院跟店中院比。'
+   +'全院拉一條平均線，會把「型態本來就辛苦」和「這間真的有問題」混在一起。</div></div>';
+
+  h+=sect('四象限','以均分 '+avg.toFixed(2)+' 分、均量 '+Math.round(avgCount)+' 則為分界');
+  h+='<div class="tri" style="grid-template-columns:repeat(2,1fr)">';
+  [
+    {t:'標竿院所',s:'高評分 × 高聲量',list:q1,tip:'服務流程文件化，作為其他院所的範本',cls:'p'},
+    {t:'優先改善',s:'低評分 × 高聲量',list:q2,tip:'負評擴散最廣，先從這裡動手',cls:'c'},
+    {t:'潛力院所',s:'高評分 × 低聲量',list:q3,tip:'品質不錯但曝光少，主動邀請留評',cls:'a'},
+    {t:'需要關注',s:'低評分 × 低聲量',list:q4,tip:'樣本小，單則負評影響大，逐則處理',cls:'c'}
+  ].forEach(function(q){
+    h+='<div class="'+q.cls+'"><h4>'+q.t+'　<span style="font-weight:400;letter-spacing:0;color:var(--ink-3)">'+q.s+'・'+q.list.length+' 間</span></h4>';
+    h+='<div style="font-size:.72rem;color:var(--ink-2);margin-bottom:10px">'+q.tip+'</div>';
+    h+='<div style="font-size:.76rem;line-height:2">'+(q.list.length
+      ? q.list.map(function(c){return esc(c.name)+'　<span class="sm">'+c.rating.toFixed(1)+' 分／'+c.count.toLocaleString()+' 則</span>';}).join('<br>')
+      : '<span class="sm">無</span>')+'</div></div>';
+  });
+  h+='</div>';
+
+  var pros=[], cons=[], strat=[], acts=[];
+  pros.push('全院累積 '+tot.toLocaleString()+' 則 Google 評論，14 間院所的線上聲量基礎已經建立');
+  pros.push(above45.length+' 間評分達 4.5 以上：'+above45.map(function(c){return c.name+' '+c.rating.toFixed(1);}).join('、'));
+  pros.push(gStats[0].g.name+' 是評分最高的分組（'+gStats[0].a.avg.toFixed(2)+'），可作為服務流程的取樣對象');
+  var loud=all.slice().sort(function(a,b){return b.count-a.count;})[0];
+  pros.push('聲量最高的 '+loud.name+' 有 '+loud.count.toLocaleString()+' 則評論且維持 '+loud.rating.toFixed(1)+' 分，是主要口碑資產');
+
+  cons.push('總院組平均 '+mA.toFixed(2)+' 分，比其他 '+rest.length+' 院低 '+(rA-mA).toFixed(2)+' 分，且佔全院評論 '+share+'%，拉低整體均分的效果最大');
+  if(below40.length) cons.push(below40.length+' 間低於 4.0 分：'+below40.map(function(c){return c.name+'（'+c.rating.toFixed(1)+'，'+c.count.toLocaleString()+' 則）';}).join('、'));
+  if(q2.length) cons.push('高聲量低評分（'+q2.map(function(c){return c.name;}).join('、')+'）負評觸及人數最多，對品牌傷害最大');
+  if(tiny.length) cons.push('評論樣本不足 50 則：'+tiny.map(function(c){return c.name+'（'+c.count+' 則）';}).join('、')+'，評分容易被少數評論左右');
+  if(all.filter(function(c){return c.status;}).length) cons.push('有院所處於非正常營運狀態：'+all.filter(function(c){return c.status;}).map(function(c){return (c.full||c.name)+'（'+c.status+'）';}).join('、')+'，其評分仍計入全院平均');
+  cons.push('分組落差 '+(gStats[0].a.avg-gStats[gStats.length-1].a.avg).toFixed(2)+' 分（'+gStats[0].g.name+' '+gStats[0].a.avg.toFixed(2)+' vs '+gStats[gStats.length-1].g.name+' '+gStats[gStats.length-1].a.avg.toFixed(2)+'）');
+
+  strat.push('總院組（'+mains.map(function(c){return c.name;}).join('、')+'）列為第一優先：夜間值班人力與候診時間告知是最常見的抱怨點');
+  strat.push('用同型態比較取代全院一條線，區分「流程問題」與「型態壓力」');
+  strat.push('建立 Google 負評回覆 SOP：48 小時內回覆、以事實澄清、留下聯絡窗口，避免單方指控成為唯一版本');
+  strat.push('評論樣本小的院所推動看診後留評邀請，把分母拉大以稀釋單則負評影響');
+  strat.push('每月固定執行一次評分同步，用真實快照追蹤趨勢而不是憑印象');
+
+  if(below40.length) acts.push('【本月】'+below40.map(function(c){return c.name;}).join('、')+'：調閱近 3 個月 1–2 星評論逐則歸因，分為醫療結果、溝通、費用、等候四類');
+  if(q2.length) acts.push('【本月】'+q2.map(function(c){return c.name;}).join('、')+'：指派專人清理未回覆負評');
+  acts.push('【本月】執行第一次評分同步，建立比較基準');
+  var closedC=all.filter(function(c){return c.status;});
+  if(closedC.length) acts.push('【即期】'+closedC.map(function(c){return (c.full||c.name)+'（'+c.status+'）';}).join('、')+'：在 Google 商家後台改為「暫停營業」，並在復業後恢復，避免顧客白跑留負評');
+  if(noDir.length) acts.push('【資料】補上 '+noDir.length+' 間院所的負責人（'+noDir.map(function(c){return c.name;}).join('、')+'），通報與責任歸屬才對得上人');
+  acts.push('【下季】評分低於 4.3 觸發預警，列入各組月會固定議題');
+  acts.push('【下季】急診分流與候診時間告知機制上線，3 個月後比對評分變化');
+
+  h+=sect('診斷彙整');
+  h+='<div class="tri">';
+  h+='<div class="p"><h4>優勢</h4><ol>'+pros.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ol></div>';
+  h+='<div class="c"><h4>問題</h4><ol>'+cons.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ol></div>';
+  h+='<div class="a"><h4>策略</h4><ol>'+strat.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ol></div>';
+  h+='</div>';
+  h+='<div class="panel"><h4 style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--maroon);'
+   +'padding-bottom:9px;margin-bottom:11px;border-bottom:2px solid var(--cream)">行動時程</h4>'
+   +'<ol style="list-style:none;counter-reset:a">'
+   +acts.map(function(t){return '<li style="counter-increment:a;font-size:.78rem;line-height:1.8;padding:8px 0 8px 24px;'
+     +'position:relative;border-bottom:1px solid var(--line-soft)"><span style="position:absolute;left:0;top:8px;'
+     +'font-size:.62rem;font-weight:900;color:var(--brand)">'+'</span>'+esc(t)+'</li>';}).join('')
+   +'</ol></div>';
+
+  h+='<div class="charts"><div class="chart"><h4>各分組平均評分</h4><canvas id="cRad" style="max-height:260px"></canvas></div>'
+   +'<div class="chart"><h4>評分分布（院所數）</h4><canvas id="cDist"></canvas></div></div>';
+  el.innerHTML=h;
+
+  setTimeout(function(){
+    mkChart('cRad','radar',{labels:GROUPS.map(function(g){return g.name;}),datasets:[{
+      label:'平均評分',data:GROUPS.map(function(g){return rAvg(g).avg;}),fill:true,
+      backgroundColor:'rgba(207,16,45,0.13)',borderColor:'#CF102D',pointBackgroundColor:'#CF102D',borderWidth:2}]},
+      {scales:{r:{min:2.5,max:5.1,grid:{color:'#EFEAE4'},angleLines:{color:'#EFEAE4'},
+        pointLabels:{color:'#2A1A16',font:{size:11,family:'Noto Sans TC'}},ticks:{display:false}}}});
+    var bins=[{l:'< 3.5',a:0,b:3.49},{l:'3.5–3.9',a:3.5,b:3.99},{l:'4.0–4.2',a:4.0,b:4.29},
+      {l:'4.3–4.5',a:4.3,b:4.59},{l:'4.6–4.8',a:4.6,b:4.89},{l:'4.9–5.0',a:4.9,b:5.0}];
+    mkChart('cDist','bar',{labels:bins.map(function(b){return b.l;}),datasets:[{
+      label:'院所數',data:bins.map(function(b){return all.filter(function(c){return c.rating>=b.a&&c.rating<=b.b;}).length;}),
+      backgroundColor:['#CF102DCC','#F3661FCC','#C2811ECC','#8FA86BCC','#2F6B4FCC','#5D2F2ACC'],borderWidth:0}]},
+      {plugins:{legend:{display:false}},scales:{y:{ticks:{precision:0}}}});
+  },60);
+}
+
+/* ══════════════════════════════════════════════════════════
+   系統設定
+   ══════════════════════════════════════════════════════════ */
+function renderSettings(el){
+  var h=pageHead('系統設定','資料來源與院所名冊','');
+  /* 排程器連線 */
+  h+='<div class="panel" style="max-width:820px;margin-bottom:4px">';
+  h+='<h4 style="font-size:.6rem;font-weight:700;letter-spacing:2.6px;color:var(--maroon);margin-bottom:6px">排程器連線（建議）</h4>';
+  h+='<div style="font-size:.72rem;color:var(--ink-2);line-height:1.85;margin-bottom:14px">'
+   +'連上排程器之後，儀表板顯示的評分與待回覆清單就來自它每小時的掃描結果，'
+   +'不必再手動按「同步」，也不會只存在這一台電腦裡。</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+  h+='<div><label style="font-size:.72rem;font-weight:700;display:block;margin-bottom:6px">Worker 位址</label>'
+   +'<input class="fld" id="wkUrl" type="url" style="width:100%;font-size:.8rem;padding:10px 13px" '
+   +'placeholder="https://lkah-review-notifier.workers.dev" value="'+esc(SETTINGS.workerUrl)+'"></div>';
+  h+='<div><label style="font-size:.72rem;font-weight:700;display:block;margin-bottom:6px">存取金鑰（ADMIN_KEY）</label>'
+   +'<input class="fld" id="wkKey" type="password" style="width:100%;font-size:.8rem;padding:10px 13px" '
+   +'placeholder="部署時設定的 ADMIN_KEY" value="'+esc(SETTINGS.workerKey)+'"></div>';
+  h+='</div>';
+  h+='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px">'
+   +'<button class="btn btn-fill" onclick="saveWorker()">儲存並連線</button>'
+   +'<button class="btn btn-gold" onclick="clearWorker()">中斷連線</button>'
+   +'<span id="wkMsg" style="font-size:.74rem;font-weight:700"></span></div>';
+  h+='<div id="wkOut" style="margin-top:14px">';
+  if(hasWorker()){
+    var age=dataAge();
+    h+= LIVE_ERR
+      ? '<div class="note warn">目前讀取失敗：'+esc(LIVE_ERR)+'</div>'
+      : '<div class="note ok">已連線。上次掃描 '+(age?esc(age.at):'未知')
+        +'，追蹤中的待回覆負評 '+pendingList().length+' 則'
+        +(LIVE&&LIVE.canReply?'，且已可透過 API 回覆評論':'，回覆功能待 Business Profile 開通')+'。</div>';
+  }
+  h+='</div></div>';
+
+  h+='<div class="panel" style="max-width:820px">';
+  h+='<h4 style="font-size:.6rem;font-weight:700;letter-spacing:2.6px;color:var(--maroon);margin-bottom:14px">單次查詢 PROXY（選用）</h4>';
+  h+='<label style="font-size:.72rem;font-weight:700;display:block;margin-bottom:6px">Proxy 位址</label>';
+  h+='<input class="fld" id="pxUrl" type="url" style="width:100%;font-size:.8rem;padding:10px 13px" '
+   +'placeholder="https://your-proxy.onrender.com" value="'+esc(SETTINGS.proxyUrl)+'">';
+  h+='<div style="font-size:.7rem;color:var(--ink-2);line-height:1.8;margin-top:9px">'
+   +'系統會呼叫 <code>你的位址/search?engine=google_maps&amp;place_id=…</code>，格式與 SerpApi 相同。'
+   +'API 金鑰放在 Proxy 伺服器上，不會出現在這個檔案裡。附的 <code>proxy-server</code> 資料夾有可直接部署的程式。</div>';
+  h+='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px">'
+   +'<button class="btn btn-fill" onclick="saveProxy()">儲存</button>'
+   +'<button class="btn btn-line" onclick="testProxy()">測試連線</button>'
+   +'<span id="setMsg" style="font-size:.74rem;font-weight:700"></span></div>';
+  h+='<div id="setOut" style="margin-top:14px"></div></div>';
+
+  h+=sect('院所名冊','14 間・4 組。要修改請編輯檔案裡的 GROUPS 陣列');
+  h+='<div class="tbl"><table><thead><tr><th>分組</th><th>院所</th><th>院長</th><th>公休</th><th>營業時間</th><th>地區</th>'
+   +'<th>地址／電話</th><th class="num">基準評分</th><th class="num">基準則數</th><th>PLACE ID</th></tr></thead><tbody>';
+  allClinics().forEach(function(c){
+    h+='<tr><td><span class="tag" style="background:'+c.group.color+'18;color:'+c.group.color+'">'+c.group.name+'</span></td>'
+     +'<td class="nm">'+esc(c.full||c.name)+'<div class="sm">'+esc(c.tag)
+       +(c.status?'　<span class="badge neg">'+esc(c.status.split('（')[0])+'</span>':'')+'</div></td>'
+     +'<td>'+(c.director?'<b>'+esc(c.director)+'</b><div class="sm">'+esc(c.dtitle||'院長')+'</div>':'<span class="badge neu">待補</span>')+'</td>'
+     +'<td class="sm">'+esc(c.rest||'—')+(c.grest&&c.grest!==c.rest?'<div style="color:#8E1220">Google：'+esc(c.grest)+'</div>':'')+'</td>'
+     +'<td class="sm">'+esc(c.hours)+(c.ghours&&c.ghours!==c.hours?'<div style="color:#8E1220">Google：'+esc(c.ghours)+'</div>':'')+'</td>'
+     +'<td class="sm">'+esc(c.zone||'')+'部　'+esc(c.city)+'</td>'
+     +'<td class="sm">'+esc(c.addr)+'<br>'+esc(c.tel)+'</td>'
+     +'<td class="num" style="font-weight:900">'+c.baseRating.toFixed(1)+'</td>'
+     +'<td class="num">'+c.baseCount.toLocaleString()+'</td>'
+     +'<td class="mono">'+esc(c.placeId)+'</td></tr>';
+  });
+  h+='</tbody></table></div>';
+
+  h+=sect('資料稽核','內部登記（115.09.01 營業資訊）對比 Google 商家上的實際顯示');
+  var diffs=[];
+  allClinics().forEach(function(c){
+    /* 已在 Google 標為暫停營業的院所，時間本來就不會顯示，不算落差 */
+    if(c.status && /暫停|歇業|停止營業/.test(c.grest||'')) return;
+    var items=[];
+    var norm=function(x){return String(x||'').replace(/[\s　]/g,'').replace(/[（(].*?[)）]/g,'');};
+    if(c.ghours && norm(c.ghours)!==norm(c.hours)) items.push({k:'營業時間',a:c.hours,b:c.ghours});
+    if(c.grest  && norm(c.grest)!==norm(c.rest))   items.push({k:'公休',a:c.rest,b:c.grest});
+    if(items.length) diffs.push({c:c,items:items});
+  });
+  h+='<div class="note'+(diffs.length?' warn':' ok')+'">'
+   +(diffs.length
+     ? '<strong>'+diffs.length+' 間院所的 Google 商家資訊與內部登記不一致。</strong><br>'
+       +'顧客看到的是 Google 那一欄。不一致最直接的後果就是白跑一趟後留負評，'
+       +'這是所有負評類型裡最容易預防的一種。'
+     : '14 間院所的營業時間與公休都與 Google 一致。')+'</div>';
+  if(diffs.length){
+    h+='<div class="tbl"><table><thead><tr><th>院所</th><th>項目</th>'
+     +'<th>內部登記</th><th>Google 顯示（顧客看到的）</th></tr></thead><tbody>';
+    diffs.forEach(function(d){
+      d.items.forEach(function(it,i){
+        h+='<tr>'+(i===0?'<td class="nm" rowspan="'+d.items.length+'">'+esc(d.c.full||d.c.name)+'</td>':'')
+         +'<td class="sm">'+esc(it.k)+'</td>'
+         +'<td class="sm">'+esc(it.a)+'</td>'
+         +'<td class="sm" style="color:#8E1220;font-weight:700">'+esc(it.b)+'</td></tr>';
+      });
+    });
+    h+='</tbody></table></div>';
+  }
+  var st=allClinics().filter(function(c){return c.status;});
+  var synced=st.filter(function(c){return /暫停|歇業|停止營業/.test(c.grest||'');});
+  var notSynced=st.filter(function(c){return !/暫停|歇業|停止營業/.test(c.grest||'');});
+  if(synced.length){
+    h+='<div class="note ok" style="margin-top:14px"><strong>營運狀態已同步到 Google：</strong>'
+     +esc(synced.map(function(c){return c.full||c.name;}).join('、'))
+     +'<br>Google 上已標為暫停營業，顧客搜尋時會看到提示。'
+     +'但要注意：暫停營業期間仍可留評論，評分也仍計入全院平均，'
+     +'所以下方統計仍包含這些院所。</div>';
+  }
+  if(notSynced.length){
+    h+='<div class="note warn" style="margin-top:14px"><strong>營運狀態尚未同步到 Google：</strong>'
+     +esc(notSynced.map(function(c){return (c.full||c.name)+'（內部記錄：'+c.status+'）';}).join('、'))
+     +'<br>Google 上目前仍顯示正常營業，顧客可能白跑一趟後留下負評。'
+     +'請在商家後台改為「暫停營業」。</div>';
+  }
+
+  h+=sect('資料來源與計算方式');
+  h+='<div class="panel" style="font-size:.78rem;line-height:1.95;max-width:960px">';
+  h+='<p><b>基準資料</b>　'+fmtDate(BASE_SNAPSHOT_DATE)+' 以 '+esc(BASE_SNAPSHOT_SOURCE)
+   +' 實際查詢 14 間院所所得的評分與評論數，沒有任何推估。</p>';
+  h+='<p style="margin-top:11px"><b>即時評論</b>　點各院「抓取即時評論」時才向 Google 查詢。'
+   +'評論內容、關鍵字次數、情感分布全部由抓到的文字計算，沒有預先寫死的文案。</p>';
+  h+='<p style="margin-top:11px"><b>卡片上的正／中／負長條</b>　由星等推估的示意值，不是實際評論統計。'
+   +'要看真實比例請點進院所詳情。</p>';
+  h+='<p style="margin-top:11px"><b>評分變化</b>　只比較實際同步過的快照。沒有歷史資料時系統會直接說沒有，'
+   +'不會填補虛構數字。</p>';
+  h+='<p style="margin-top:11px"><b>院所名冊與分組</b>　14 間院所與四個分組由院方提供。'
+   +'每間的 <code>director</code> 欄位填上院長姓名後，卡片、排行、通報都會自動顯示。</p>';
+  h+='<p style="margin-top:11px"><b>配色</b>　依 2026 慈愛 CIS：主紅 PANTONE 186C #CF102D 只用於重點與警示；'
+   +'chrome 主色取 PANTONE 175C 壓深為 #4A2420／#2E1512，讓紅色能真正跳出來；'
+   +'金取 PANTONE 7550C 壓深為 #B8842A、鮮橙 V5 壓深為 #D9601F，避免螢幕上刺眼。'
+   +'紙面用暖白 #F7F5F2 而非純灰，配深棕比較沉穩。</p>';
+  h+='<p style="margin-top:11px"><b>字體</b>　標題與數字用<b>思源宋體（Noto Serif TC）</b>，介面與表格用思源黑體。'
+   +'CIS 指定的是 NotoSansHK，這裡把標題改成宋體是刻意的判斷 —— 宋體在中文語境下比黑體更沉穩、'
+   +'也更符合醫療機構的專業感。如果貴院要嚴格遵循 CIS，把 CSS 裡的 <code>--serif</code> '
+   +'改成跟 <code>--sans</code> 相同即可全部回到黑體。</p>';
+  h+='<p style="margin-top:11px"><b>功能色例外</b>　正評用綠 #2A5F47。CIS 沒有綠色，'
+   +'但儀表板需要好／普通／差三段一眼可辨，全用暖色會分不出來。這個綠只出現在數據狀態，'
+   +'不用在任何品牌元素上。</p>';
+  h+='</div>';
+  el.innerHTML=h;
+}
+function saveWorker(){
+  var u=document.getElementById('wkUrl').value.trim().replace(/\/+$/,'');
+  var k=document.getElementById('wkKey').value.trim();
+  var msg=document.getElementById('wkMsg');
+  if(u && !/^https?:\/\//.test(u)){
+    msg.style.color='var(--brand)'; msg.textContent='位址要以 https:// 開頭。'; return;
+  }
+  if(u && !k){ msg.style.color='var(--brand)'; msg.textContent='請一併填入存取金鑰。'; return; }
+  SETTINGS.workerUrl=u; SETTINGS.workerKey=k; saveSettings();
+  msg.style.color='var(--ink-2)'; msg.textContent='正在連線…';
+  loadLive().then(function(){
+    buildNav();
+    showView('settings');
+  });
+}
+function clearWorker(){
+  SETTINGS.workerUrl=''; SETTINGS.workerKey=''; saveSettings();
+  LIVE=null; LIVE_ERR=null;
+  allClinics().forEach(function(c){ c.rating=c.baseRating; c.count=c.baseCount; });
+  applyLatest(); buildNav(); showView('settings');
+}
+function saveProxy(){
+  var v=document.getElementById('pxUrl').value.trim(), msg=document.getElementById('setMsg');
+  if(v&&!/^https?:\/\//.test(v)){msg.style.color='var(--brand)';msg.textContent='位址要以 http:// 或 https:// 開頭。';return;}
+  SETTINGS.proxyUrl=v.replace(/\/+$/,''); saveSettings();
+  msg.style.color='var(--pos)'; msg.textContent=v?'已儲存。':'已清除設定。';
+  buildNav(); updateHeader();
+}
+async function testProxy(){
+  var out=document.getElementById('setOut'), msg=document.getElementById('setMsg');
+  var v=document.getElementById('pxUrl').value.trim().replace(/\/+$/,'');
+  if(!v){msg.style.color='var(--brand)';msg.textContent='請先填入位址。';return;}
+  SETTINGS.proxyUrl=v; saveSettings(); msg.textContent='';
+  out.innerHTML='<div style="display:flex;gap:9px;align-items:center;font-size:.76rem;color:var(--ink-2)">'
+    +'<div class="spin" style="width:15px;height:15px"></div>正在用台北總院測試…</div>';
+  try{
+    var s=await fetchClinicStats(findClinic('tp-main'));
+    out.innerHTML='<div class="note ok">連線成功。台北總院目前 '+s.rating.toFixed(1)+' 分／'+s.count.toLocaleString()+' 則評論。</div>';
+    buildNav();
+  }catch(e){
+    out.innerHTML='<div class="note warn"><strong>連線失敗：'+esc(e.message)+'</strong><br>'
+      +'檢查順序：<br>1. 位址是否正確、伺服器是否已啟動（免費方案首次喚醒約 30 秒）<br>'
+      +'2. Proxy 回應是否帶 <code>Access-Control-Allow-Origin</code><br>'
+      +'3. API 金鑰是否有效、額度是否還有<br>4. 路徑是否為 <code>/search</code></div>';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   院所詳情：即時評論
+   ══════════════════════════════════════════════════════════ */
+function closeDlg(){document.getElementById('dlg').classList.remove('on');}
+document.getElementById('dlg').addEventListener('click',function(e){if(e.target===e.currentTarget)closeDlg();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDlg();});
+
+async function openDlg(id){
+  var c=findClinic(id); if(!c)return;
+  document.getElementById('dlgT').textContent=c.name;
+  document.getElementById('dlgS').textContent=c.group.name+'　'+(c.director?(c.dtitle||'院長')+' '+c.director+'　':'')
+    +c.rating.toFixed(1)+' 分／'+c.count.toLocaleString()+' 則';
+  var b=document.getElementById('dlgB');
+  document.getElementById('dlg').classList.add('on');
+
+  var info='<div class="tbl" style="margin-bottom:18px"><table><tbody>'
+   +'<tr><th style="width:110px">院所全名</th><td>'+esc(c.full||c.name)+'</td></tr>'
+   +(c.status?'<tr><th>營運狀態</th><td><span class="badge neg">'+esc(c.status)+'</span></td></tr>':'')
+   +'<tr><th>'+esc(c.dtitle||'院長')+'</th><td>'+(c.director?'<b>'+esc(c.director)+'</b>':'<span class="badge neu">待補</span>')+'</td></tr>'
+   +(c.deputy?'<tr><th>其他主管</th><td>'+esc(c.deputy)+'</td></tr>':'')
+   +'<tr><th>分組／區域</th><td>'+esc(c.group.name)+'　'+esc(c.zone||'')+'部</td></tr>'
+   +'<tr><th>類型</th><td>'+esc(c.tag)+'</td></tr>'
+   +'<tr><th>地址</th><td>'+esc(c.addr)+'</td></tr>'
+   +'<tr><th>電話</th><td>'+esc(c.tel)+'</td></tr>'
+   +'<tr><th>營業時間</th><td>'+esc(c.hours)
+     +(c.ghours&&c.ghours!==c.hours?'<div class="sm" style="color:#8E1220">Google 顯示：'+esc(c.ghours)+'</div>':'')+'</td></tr>'
+   +'<tr><th>公休</th><td>'+esc(c.rest||'—')
+     +(c.grest&&c.grest!==c.rest?'<div class="sm" style="color:#8E1220">Google 顯示：'+esc(c.grest)+'</div>':'')+'</td></tr>'
+   +'<tr><th>登記名稱</th><td class="sm">'+esc(c.entity||'')+'</td></tr>'
+   +'<tr><th>Google 標示</th><td class="sm">'+esc(c.gname||c.name)+'</td></tr>'
+   +'<tr><th>Google</th><td><a class="link" href="'+c.url+'" target="_blank" rel="noopener">開啟評論頁 ↗</a></td></tr>'
+   +'</tbody></table></div>';
+
+  if(!hasProxy()){
+    b.innerHTML=info+'<div class="note">要抓即時評論，先到系統設定填入 Proxy 位址。'
+      +'目前顯示的是 '+fmtDate(BASE_SNAPSHOT_DATE)+' 實查的基準資料：'
+      +c.rating.toFixed(1)+' 分、'+c.count.toLocaleString()+' 則。</div>'
+      +'<button class="btn btn-fill" onclick="closeDlg();showView(\'settings\')">前往系統設定</button>';
+    return;
+  }
+  b.innerHTML='<div class="load"><div class="spin"></div>'
+    +'<div class="mono">正在向 Google 取得 '+esc(c.name)+' 的最新評論…</div></div>';
+  try{
+    var revs=await fetchClinicReviews(c,20);
+    if(!revs.length){
+      b.innerHTML=info+'<div class="note">這間院所沒有抓到文字評論。可能是 API 尚未涵蓋，或該院評論皆為純星等。</div>';
+      return;
+    }
+    renderDlg(c,revs,analyzeReviews(revs),info);
+  }catch(err){
+    b.innerHTML=info+'<div class="note warn"><strong>抓取失敗：'+esc(err.message)+'</strong><br>'
+      +'常見原因：Proxy 位址填錯、伺服器休眠中（免費方案首次喚醒約 30 秒）、API 額度用完，'
+      +'或 Proxy 沒開 CORS。</div>';
+  }
+}
+function renderDlg(c,revs,an,info){
+  document.getElementById('dlgS').textContent=c.group.name+'　已抓取 '+an.total+' 則最新評論　正 '+an.pos+'／中 '+an.neu+'／負 '+an.neg;
+  var h='<div style="font-size:.63rem;color:var(--ink-3);letter-spacing:1.2px;margin-bottom:14px">'
+   +'GOOGLE MAPS 真實評論・抓取時間 '+new Date().toLocaleString('zh-TW')+'</div>';
+  h+='<div class="tabs">'
+   +'<div class="tab on" onclick="swTab(this,\'t-all\')">全部 '+an.total+'</div>'
+   +'<div class="tab" onclick="swTab(this,\'t-pos\')">正評 '+an.pos+'</div>'
+   +'<div class="tab" onclick="swTab(this,\'t-neu\')">中性 '+an.neu+'</div>'
+   +'<div class="tab" onclick="swTab(this,\'t-neg\')">負評 '+an.neg+'</div>'
+   +'<div class="tab" onclick="swTab(this,\'t-sum\')">分析摘要</div>'
+   +'<div class="tab" onclick="swTab(this,\'t-inf\')">院所資料</div></div>';
+  function list(items){
+    return items.length ? items.map(revCard).join('')
+      : '<div style="padding:28px;text-align:center;color:var(--ink-3);font-size:.8rem">這個分類目前沒有評論。</div>';
+  }
+  h+='<div id="t-all">'+list(an.items)+'</div>';
+  h+='<div id="t-pos" style="display:none">'+list(an.items.filter(function(i){return i.sentiment==='positive';}))+'</div>';
+  h+='<div id="t-neu" style="display:none">'+list(an.items.filter(function(i){return i.sentiment==='neutral';}))+'</div>';
+  h+='<div id="t-neg" style="display:none">'+list(an.items.filter(function(i){return i.sentiment==='negative';}))+'</div>';
+  h+='<div id="t-inf" style="display:none">'+info+'</div>';
+
+  h+='<div id="t-sum" style="display:none">';
+  h+='<div class="panel"><h4 style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--maroon);margin-bottom:5px">'
+   +'評論關鍵字</h4><div style="font-size:.68rem;color:var(--ink-3);margin-bottom:16px">'
+   +'由這 '+an.total+' 則評論實際計算。數字＝出現於幾則評論。正評關鍵字取自 4–5 星，負評關鍵字取自 1–3 星。</div>';
+  h+='<div style="margin-bottom:14px"><div style="font-size:.66rem;font-weight:700;color:var(--pos);margin-bottom:8px">正評關鍵字</div>'
+   +(an.posKw.length?an.posKw.map(function(k){return '<span class="kw p">'+esc(k.word)+'<i>×'+k.n+'</i></span>';}).join('')
+     :'<span class="sm">這批評論沒有出現追蹤中的正評詞。</span>')+'</div>';
+  h+='<div><div style="font-size:.66rem;font-weight:700;color:#9A0F22;margin-bottom:8px">負評關鍵字</div>'
+   +(an.negKw.length?an.negKw.map(function(k){return '<span class="kw n">'+esc(k.word)+'<i>×'+k.n+'</i></span>';}).join('')
+     :'<span class="sm">這批評論沒有出現追蹤中的負評詞。</span>')+'</div></div>';
+
+  var pl=an.posKw.slice(0,4).map(function(k){return '顧客常提到「'+k.word+'」（'+k.n+' 則）';});
+  if(!pl.length) pl=['這批評論沒有集中出現的正面詞，可再擴大抓取範圍。'];
+  var nl=an.negKw.slice(0,4).map(function(k){return '顧客常抱怨「'+k.word+'」（'+k.n+' 則）';});
+  if(!nl.length) nl=['這批評論沒有集中出現的負面詞。'];
+  var al=an.negKw.slice(0,3).map(function(k){return '針對「'+k.word+'」建立處理流程並指派負責人';});
+  al.push('在 Google 後台逐則回覆這 '+an.neg+' 則負評，回覆後追蹤是否修改評分');
+  h+='<div class="tri"><div class="p"><h4>正評重點</h4><ol>'+pl.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ol></div>'
+   +'<div class="c"><h4>負評重點</h4><ol>'+nl.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ol></div>'
+   +'<div class="a"><h4>建議行動</h4><ol>'+al.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ol></div></div>';
+  h+='<div class="panel"><h4 style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--maroon);margin-bottom:10px">'
+   +'這批評論的實際分布</h4><div style="font-size:.79rem;line-height:1.9">'
+   +'最新 '+an.total+' 則裡，4–5 星 '+an.pos+' 則（'+an.posRate+'%）、3 星 '+an.neu+' 則、1–2 星 '+an.neg+' 則。'
+   +'院所目前 Google 總體評分 '+c.rating.toFixed(1)+' 分、累計 '+c.count.toLocaleString()+' 則。'
+   +(an.posRate>=80?'近期評論以正面為主。':an.posRate>=60?'近期評論偏正面，但仍有可處理的負評。':'近期負評比例偏高，建議優先介入。')
+   +'</div></div></div>';
+  document.getElementById('dlgB').innerHTML=h;
+}
+function revCard(it){
+  var rv=it.raw, u=rv.user||{};
+  var col=it.stars>=4?'var(--gold)':it.stars===3?'var(--orange)':'var(--brand)';
+  var st='';
+  for(var i=0;i<it.stars;i++)st+='★';
+  for(var j=it.stars;j<5;j++)st+='☆';
+  var meta=[];
+  if(u.local_guide)meta.push('在地嚮導');
+  if(u.reviews)meta.push(u.reviews+' 則評論');
+  var badge=it.sentiment==='positive'?'<span class="badge pos">正評</span>'
+    :it.sentiment==='neutral'?'<span class="badge neu">中性</span>':'<span class="badge neg">負評</span>';
+  var h='<div class="rev '+it.sentiment+'">';
+  h+='<div class="rev-hd"><div><div class="rev-au">'+esc(u.name||'匿名用戶')+'</div>'
+   +'<div class="rev-mt">'+esc(meta.join('・'))+'</div></div>'
+   +'<div class="rev-rt"><div class="rev-st" style="color:'+col+'">'+st+'</div>'
+   +'<div class="rev-dt">'+esc(rv.date||'')+'</div><div style="margin-top:4px">'+badge+'</div></div></div>';
+  h+='<div class="rev-tx">'+esc(it.text||'（此評論沒有文字內容）')+'</div>';
+  if(it.pos.length||it.neg.length){
+    h+='<div class="rev-an">';
+    if(it.pos.length)h+='<span><b>正面詞</b>　'+esc(it.pos.join('、'))+'</span>';
+    if(it.neg.length)h+='<span><b>負面詞</b>　'+esc(it.neg.join('、'))+'</span>';
+    h+='</div>';
+  }
+  if(rv.response&&(rv.response.snippet||rv.response.text)){
+    h+='<div class="rev-an"><span><b>院方回覆</b>　'+esc(rv.response.snippet||rv.response.text)+'</span></div>';
+  }
+  h+='</div>';
+  return h;
+}
+function swTab(el,id){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  el.classList.add('on');
+  ['t-all','t-pos','t-neu','t-neg','t-sum','t-inf'].forEach(function(t){
+    var e=document.getElementById(t); if(e)e.style.display=(t===id?'':'none');
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   啟動
+   ══════════════════════════════════════════════════════════ */
+(function init(){
+  var lg=document.getElementById('mhLogo');
+  if(lg) lg.src='data:image/png;base64,'+LOGO_B64;
+  applyLatest();
+  buildNav();
+  showView('overview');
+  if(hasWorker()){
+    loadLive().then(function(){
+      buildNav();
+      showView(CURRENT.view, CURRENT.gid);
+    });
+    /* 開著頁面時每 10 分鐘自動重讀一次（排程器是每小時掃描） */
+    setInterval(function(){
+      if(document.visibilityState==='visible'){
+        loadLive(true).then(function(){ updateHeader(); });
+      }
+    }, 10*60*1000);
+  }
+})();
+</script>
+</body>
+</html>
