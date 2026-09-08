@@ -332,6 +332,31 @@ a{color:var(--maroon)}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{.nav,.statbar,.burger{display:none}.main{padding:0}}
+
+/* ══════ 評論回覆作業辦法（獨立分頁專用樣式，全部限定在 .sop 內） ══════ */ .sop .sop{margin:0 -4px}
+.sop :root[data-theme="dark"]{
+  --ground:#10161d;
+  --paper:#182029;
+  --paper-2:#1e2731;
+  --ink:#e8edf2;
+  --ink-2:#c0cbd6;
+  --muted:#8b9caa;
+  --rule:#2d3945;
+  --rule-2:#242e39;
+  --gold:#dfa945;
+  --gold-soft:#2c2416;
+  --neg:#e88a7d;
+  --neg-soft:#2e1b18;
+  --mid:#dda94f;
+  --mid-soft:#2b2214;
+  --pos:#6ec0a2;
+  --pos-soft:#14261f;
+  --navy:#9dc0dd;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.7);
+}.sop{color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.85}.sop .docwrap{max-width:980px;margin:0 auto;padding:0 20px 96px}.sop /* ---------- masthead ---------- */ .sop .mast{background:var(--panel);border-bottom:3px solid var(--gold);box-shadow:none;margin-bottom:32px}.sop .mast-in{max-width:980px;margin:0 auto;padding:34px 20px 26px}.sop .org{font-size:.72rem;letter-spacing:.22em;color:var(--ink-3);font-weight:500}.sop h1{font-family:var(--serif);font-weight:900;font-size:clamp(1.75rem,4.4vw,2.5rem);letter-spacing:.04em;line-height:1.3;margin:8px 0 6px;text-wrap:balance}.sop .sub{font-family:var(--serif);font-size:1rem;color:var(--gold);letter-spacing:.08em}.sop .docmeta{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line-soft);font-size:.78rem;color:var(--ink-3)}.sop .docmeta b{color:var(--ink-2);font-weight:500}.sop /* ---------- SLA quick cards ---------- */ .sop .sla{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:0 0 34px}.sop .slac{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:3px;padding:16px 18px 14px;box-shadow:none}.sop .slac .tier{font-family:var(--serif);font-weight:700;font-size:.95rem;color:var(--c);letter-spacing:.05em}.sop .slac .stars{font-size:.72rem;color:var(--ink-3);letter-spacing:.1em;margin-top:2px}.sop .slac .clock{font-family:var(--serif);font-weight:900;font-size:2.1rem;line-height:1.1;margin-top:10px;font-variant-numeric:tabular-nums;color:var(--ink)}.sop .slac .clock small{font-size:.9rem;font-weight:500;color:var(--ink-3);margin-left:2px}.sop .slac .who{font-size:.76rem;color:var(--ink-2);margin-top:6px;border-top:1px dashed var(--line);padding-top:8px}.sop .c-neg{--c:#9A0F22}.sop .c-mid{--c:#7A4E12}.sop .c-pos{--c:var(--pos)}.sop .c-red{--c:var(--maroon)}.sop /* ---------- chapters & clauses ---------- */ .sop .chap{margin:44px 0 0}.sop .chap-h{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:4px}.sop .chap-n{font-family:var(--serif);font-weight:700;font-size:.8rem;letter-spacing:.14em;color:var(--gold);white-space:nowrap}.sop .chap-t{font-family:var(--serif);font-weight:700;font-size:1.22rem;letter-spacing:.06em}.sop .clause{display:grid;grid-template-columns:88px 1fr;gap:0 20px;padding:20px 0;border-bottom:1px solid var(--line-soft)}.sop .cno{font-family:var(--serif);font-weight:700;font-size:.9rem;color:var(--maroon);letter-spacing:.04em;padding-top:2px}.sop .cbody{min-width:0}.sop .ct{font-weight:700;font-size:1rem;margin-bottom:6px;letter-spacing:.02em}.sop .cbody p{margin:0 0 8px;color:var(--ink-2);max-width:66ch}.sop .cbody p:last-child{margin-bottom:0}.sop ol.legal{margin:6px 0 8px;padding-left:1.5em;color:var(--ink-2)}.sop ol.legal>li{margin-bottom:5px;max-width:64ch}.sop ul.plain{list-style:none;margin:6px 0 8px;padding:0;color:var(--ink-2)}.sop ul.plain>li{position:relative;padding-left:1.1em;margin-bottom:5px;max-width:64ch}.sop ul.plain>li::before{content:"—";position:absolute;left:0;color:var(--gold)}.sop .kbd{font-family:var(--sans);font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);background:var(--cream-soft);border-radius:2px;padding:0 5px}.sop .note{background:var(--panel-2);border-left:3px solid var(--gold);padding:12px 16px;margin:10px 0;font-size:.86rem;color:var(--ink-2);border-radius:0 3px 3px 0}.sop .note b{color:var(--ink)}.sop /* ---------- tables ---------- */ .sop .tw{overflow-x:auto;margin:12px 0 6px;border:1px solid var(--line);border-radius:3px;background:var(--panel)}.sop table{border-collapse:collapse;width:100%;min-width:560px;font-size:.85rem}.sop th, .sop td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.6}.sop thead th{background:var(--panel-2);font-weight:700;font-size:.76rem;letter-spacing:.06em;color:var(--ink-3);border-bottom:1px solid var(--line)}.sop tbody tr:last-child td{border-bottom:0}.sop td.num{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:700}.sop .pill{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:10px;white-space:nowrap;letter-spacing:.03em}.sop .p-neg{background:#FCEBED;color:#9A0F22}.sop .p-mid{background:#FAF1DE;color:#7A4E12}.sop .p-pos{background:var(--pos-soft);color:var(--pos)}.sop .p-gold{background:var(--cream-soft);color:var(--gold)}.sop /* ---------- do / dont ---------- */ .sop .dd{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:14px 0 4px}.sop .ddc{border:1px solid var(--line);border-radius:3px;padding:14px 16px;background:var(--panel)}.sop .ddc h4{font-size:.78rem;letter-spacing:.1em;margin-bottom:8px;font-weight:700}.sop .ddc.bad h4{color:#9A0F22}.sop .ddc.good h4{color:var(--pos)}.sop .ddc p{font-size:.86rem;margin:0 0 8px;color:var(--ink-2)}.sop .ddc p:last-child{margin:0}.sop .quote{font-family:var(--serif);font-size:.9rem;color:var(--ink);background:var(--panel-2);padding:10px 12px;border-radius:3px;line-height:1.8}.sop /* ---------- script cards ---------- */ .sop .scripts{display:grid;gap:14px;margin:14px 0}.sop .sc{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--c,var(--gold));border-radius:0 3px 3px 0;padding:14px 18px}.sop .sc-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-bottom:8px}.sop .sc-h .t{font-weight:700;font-size:.94rem}.sop .sc-h .sit{font-size:.76rem;color:var(--ink-3)}.sop .sc-body{font-family:var(--serif);font-size:.92rem;line-height:1.95;color:var(--ink);white-space:pre-line;background:var(--panel-2);padding:12px 14px;border-radius:3px}.sop .sc-tip{font-size:.78rem;color:var(--ink-3);margin-top:8px}.sop /* ---------- flow ---------- */ .sop .flow{margin:16px 0 8px}.sop .step{display:grid;grid-template-columns:34px 1fr;gap:14px;padding-bottom:16px;position:relative}.sop .step:not(:last-child)::before{content:"";position:absolute;left:16px;top:32px;bottom:0;width:1px;background:var(--line)}.sop .step .dot{width:34px;height:34px;border-radius:50%;background:var(--panel);border:1.5px solid var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:.9rem;z-index:1}.sop .step .st{font-weight:700;font-size:.94rem;margin-bottom:2px;padding-top:5px}.sop .step .sd{font-size:.86rem;color:var(--ink-2);max-width:62ch}.sop .step .sd b{color:var(--ink)}.sop .stamp{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.1em;color:#9A0F22;border:1px solid #9A0F22;padding:2px 8px;border-radius:2px;margin-left:8px;vertical-align:middle}.sop .foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:.78rem;color:var(--ink-3)}
+@media (max-width:640px){.sop .clause{grid-template-columns:1fr;gap:4px}.sop .cno{color:var(--gold)}.sop{font-size:14.5px}
+}
+
 </style>
 </head>
 <body>
@@ -382,7 +407,7 @@ a{color:var(--maroon)}
       快照；沒同步過就直接說沒有。
    3. 評論內容、關鍵字、情感分布一律由即時抓取的評論文字計算。
    ══════════════════════════════════════════════════════════ */
-var BASE_SNAPSHOT_DATE = '2026-08-31';
+var BASE_SNAPSHOT_DATE = '2026-09-06';
 var BASE_SNAPSHOT_SOURCE = 'Google Places 實查';
 
 var LOGO_B64 = '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';
@@ -400,21 +425,21 @@ var GROUPS = [
      director:'葉肇晟', dtitle:'院長', deputy:'胡甸浩 總院副院長',
      tag:'總院', hours:'醫療門診 11:00–22:00｜百貨 24H', rest:'無',
      entity:'慈愛動物醫院寧夏分院', ghours:'每日 11:00–22:00', grest:'無',
-     rating:3.5, count:772},
+     rating:3.5, count:773},
     {id:'tc-main', name:'中總', full:'台中總院', gname:'慈愛動物醫院-台中總院(24H急診)',
      placeId:'ChIJn00V7I49aTQRPXcqPTom3Sg', zone:'中', city:'台中市',
      addr:'41266 台中市大里區國光路二段539號', tel:'(04)2406-6688',
      director:'葉英良', dtitle:'院長', deputy:'',
      tag:'總院・24H 急診', hours:'24 小時', rest:'無',
      entity:'慈愛動物醫院中港分院', ghours:'24 小時', grest:'無',
-     rating:3.0, count:411},
+     rating:3.0, count:412},
     {id:'tn-main', name:'南總', full:'台南總院', gname:'慈愛動物醫院-台南總院',
      placeId:'ChIJDTbilnh2bjQR57AnKDfQFxI', zone:'南', city:'台南市',
      addr:'702005 台南市西門路一段473號', tel:'(06)220-3166',
      director:'鄭文欽', dtitle:'院長', deputy:'',
      tag:'總院・24H 急診', hours:'24 小時', rest:'無',
      entity:'慈愛動物醫院', ghours:'24 小時', grest:'無',
-     rating:3.1, count:603}
+     rating:3.1, count:604}
   ]},
   {id:'g2', name:'店中院組', color:'#C2811E',
    note:'設於門市內的醫療院所，多有固定公休日。評論量較小，但評分普遍是全院最高的一群。',
@@ -439,11 +464,11 @@ var GROUPS = [
      director:'林哲安', dtitle:'院長', deputy:'',
      tag:'店中院', hours:'11:00–20:00', rest:'週三、週日',
      entity:'慈愛動物醫院中山分院', ghours:'11:00–20:00', grest:'週三、週日',
-     rating:5.0, count:28},
+     rating:5.0, count:29},
     {id:'cy-west', name:'嘉義西區', full:'嘉義西區分院', gname:'慈愛動物醫院-嘉義西區分院',
      placeId:'ChIJqQl27oiXbjQROgSnmyZ-HwY', zone:'南', city:'嘉義市',
      addr:'600078 嘉義市西區北港路313號', tel:'(05)231-3688',
-     director:'賴柏宇', dtitle:'院長', deputy:'',
+     director:'', dtitle:'院長', deputy:'',
      tag:'店中院', hours:'11:00–20:00', rest:'暫停營業',
      status:'暫時歇業（115.08.28 起・Google 已標暫停營業）', entity:'慈愛動物醫院嘉義西區分院',
      ghours:'未顯示（已標暫停營業）', grest:'暫停營業',
@@ -454,7 +479,7 @@ var GROUPS = [
      director:'郭福添', dtitle:'院長', deputy:'',
      tag:'店中院', hours:'11:00–20:00', rest:'週二、週三',
      entity:'慈愛動物醫院西門分院', ghours:'11:00–20:00', grest:'週二、週三',
-     rating:4.6, count:255},
+     rating:4.6, count:261},
     {id:'tn-zhonghua', name:'中華分院', full:'中華分院', gname:'慈愛動物醫院-中華院',
      placeId:'ChIJgRfAiN52bjQRYgx3CzmMEHk', zone:'南', city:'台南市',
      addr:'710 台南市永康區中華路657號', tel:'(06)233-9650',
@@ -486,14 +511,14 @@ var GROUPS = [
      director:'陳勃維', dtitle:'院長', deputy:'',
      tag:'院中店', hours:'11:00–20:00', rest:'週四、週日',
      entity:'慈愛動物醫院九如分院', ghours:'11:00–17:00、18:00–20:00', grest:'週四、週日',
-     rating:4.6, count:715},
+     rating:4.6, count:716},
     {id:'kh-zuoying', name:'高雄分院', full:'高雄分院', gname:'慈愛動物醫院-高雄分院',
      placeId:'ChIJOzmnJKcFbjQRMtir5mlgYhI', zone:'南', city:'高雄市',
      addr:'813029 高雄市左營區文自路500號', tel:'(07)349-5566',
      director:'廖凌君', dtitle:'院長', deputy:'林毓民 店長（百貨）',
      tag:'院中店', hours:'醫療 11:00–20:00｜百貨 10:00–21:00', rest:'百貨無休｜醫療休週三',
      entity:'慈愛動物醫院高雄分院', ghours:'11:00–20:00', grest:'週三',
-     rating:4.4, count:205}
+     rating:4.4, count:207}
   ]},
   {id:'g4', name:'專科醫院', color:'#5D2F2A',
    note:'轉診型專科。評論多與重症、慢性病照護有關，個案敘述較長。',
@@ -556,12 +581,54 @@ function proxyBase(){ return (SETTINGS.proxyUrl||'').replace(/\/+$/,''); }
    ============================================================ */
 var SNAP_KEY = 'tzai_snapshots_v1';
 
-function baseSnapshot(){
-  var data = {};
-  allClinics().forEach(function(c){
-    data[c.placeId] = {rating:c.baseRating, count:c.baseCount, name:c.name};
+/* ══════════════════════════════════════════════════════════
+   內建歷史快照
+   ------------------------------------------------------------
+   以下四個日期的評分與評論數，都是在該日期以 Google Places
+   逐間實際查詢所得，沒有任何推估、內插或補值。
+   格式：院所 id: [評分, 評論數]
+   ══════════════════════════════════════════════════════════ */
+var BUILTIN_SNAPSHOTS = [
+  {date:'2026-08-10', d:{
+    'tp-main':[3.5,772],'tc-main':[3.0,408],'tn-main':[3.1,599],
+    'ml-xianfu':[4.7,84],'tc-beitun':[4.7,29],'ch-zhongshan':[5.0,28],
+    'cy-west':[4.3,95],'tn-ximen':[4.6,235],'tn-zhonghua':[4.4,299],
+    'tn-dawan':[4.6,44],'tn-rende':[4.3,358],'kh-jiuru':[4.6,710],
+    'kh-zuoying':[4.4,204],'tp-manhattan':[4.4,205]}},
+  {date:'2026-08-27', d:{
+    'tp-main':[3.5,772],'tc-main':[3.0,410],'tn-main':[3.1,601],
+    'ml-xianfu':[4.7,84],'tc-beitun':[4.7,29],'ch-zhongshan':[5.0,28],
+    'cy-west':[4.3,95],'tn-ximen':[4.6,249],'tn-zhonghua':[4.4,300],
+    'tn-dawan':[4.6,44],'tn-rende':[4.3,361],'kh-jiuru':[4.6,714],
+    'kh-zuoying':[4.4,205],'tp-manhattan':[4.4,205]}},
+  {date:'2026-08-31', d:{
+    'tp-main':[3.5,772],'tc-main':[3.0,411],'tn-main':[3.1,603],
+    'ml-xianfu':[4.7,84],'tc-beitun':[4.7,29],'ch-zhongshan':[5.0,28],
+    'cy-west':[4.3,95],'tn-ximen':[4.6,255],'tn-zhonghua':[4.4,300],
+    'tn-dawan':[4.6,45],'tn-rende':[4.3,361],'kh-jiuru':[4.6,715],
+    'kh-zuoying':[4.4,205],'tp-manhattan':[4.4,208]}},
+  {date:'2026-09-06', d:{
+    'tp-main':[3.5,773],'tc-main':[3.0,412],'tn-main':[3.1,604],
+    'ml-xianfu':[4.7,84],'tc-beitun':[4.7,29],'ch-zhongshan':[5.0,29],
+    'cy-west':[4.3,95],'tn-ximen':[4.6,261],'tn-zhonghua':[4.4,300],
+    'tn-dawan':[4.6,45],'tn-rende':[4.3,361],'kh-jiuru':[4.6,716],
+    'kh-zuoying':[4.4,207],'tp-manhattan':[4.4,208]}}
+];
+
+function builtinSnapshots(){
+  return BUILTIN_SNAPSHOTS.map(function(s){
+    var data={};
+    allClinics().forEach(function(c){
+      var v=s.d[c.id];
+      if(v) data[c.placeId]={rating:v[0], count:v[1], name:c.name};
+    });
+    return {date:s.date, source:'Google Places 實查', base:true, data:data};
   });
-  return {date:BASE_SNAPSHOT_DATE, source:BASE_SNAPSHOT_SOURCE, base:true, data:data};
+}
+
+function baseSnapshot(){
+  var b = builtinSnapshots();
+  return b[b.length-1];
 }
 function getSnapshots(){
   var arr = [];
@@ -569,7 +636,7 @@ function getSnapshots(){
     var raw = localStorage.getItem(SNAP_KEY);
     if(raw) arr = JSON.parse(raw) || [];
   }catch(e){ arr = []; }
-  var all = [baseSnapshot()].concat(arr);
+  var all = builtinSnapshots().concat(arr);
   all.sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
   return all;
 }
@@ -819,6 +886,13 @@ function dataAge(){
   return {mins:mins, at:LIVE.generatedAt};
 }
 
+
+/* ══════════════════════════════════════════════════════════
+   Google 評論回覆作業辦法（MKT-SOP-2026-01 v1.0 草案）
+   內容由管理處行銷部擬訂，此處僅內嵌呈現，未改動條文。
+   ══════════════════════════════════════════════════════════ */
+var SOP_HTML = "<header class=\"mast\">\n  <div class=\"mast-in\">\n    <div class=\"org\">慈愛生物科技股份有限公司 ・ 慈愛動物醫院體系</div>\n    <h1>Google 評論回覆作業辦法</h1>\n    <div class=\"sub\">各院所評論監看、回覆時效與品質管理規範</div>\n    <div class=\"docmeta\">\n      <span><b>文件編號</b>　MKT-SOP-2026-01</span>\n      <span><b>版本</b>　v1.0 草案</span>\n      <span><b>擬訂單位</b>　管理處行銷部</span>\n      <span><b>適用</b>　全體院所（含店中院、迷你院）</span>\n      <span><b>核定</b>　待總經理核定後生效</span>\n    </div>\n  </div>\n</header>\n\n<div class=\"docwrap\">\n\n  <section class=\"sla\" aria-label=\"回覆時效速查\">\n    <div class=\"slac c-neg\">\n      <div class=\"tier\">負面評論</div>\n      <div class=\"stars\">★☆☆☆☆ ─ ★★☆☆☆　1〜2 星</div>\n      <div class=\"clock\">24<small>小時內</small></div>\n      <div class=\"who\">院長核可後由專責人回覆</div>\n    </div>\n    <div class=\"slac c-mid\">\n      <div class=\"tier\">中性評論</div>\n      <div class=\"stars\">★★★☆☆　3 星</div>\n      <div class=\"clock\">48<small>小時內</small></div>\n      <div class=\"who\">專責人回覆，院長事後抽看</div>\n    </div>\n    <div class=\"slac c-pos\">\n      <div class=\"tier\">正面評論</div>\n      <div class=\"stars\">★★★★☆ ─ ★★★★★　4〜5 星</div>\n      <div class=\"clock\">72<small>小時內</small></div>\n      <div class=\"who\">專責人直接回覆</div>\n    </div>\n    <div class=\"slac c-red\">\n      <div class=\"tier\">紅線案件</div>\n      <div class=\"stars\">醫療爭議／法律威脅／媒體</div>\n      <div class=\"clock\">2<small>小時內通報</small></div>\n      <div class=\"who\">先通報，暫緩對外回覆</div>\n    </div>\n  </section>\n\n  <div class=\"note\">\n    <b>時效起算：</b>以 Google 商家檔案顯示之評論張貼時間為起算點，計算至回覆送出時間。逾當日 21:00 後張貼者，自次日 09:00 起算；遇公休日順延至次一營業日，但 <b>1〜2 星負評不因公休日順延</b>，由當班主管或代理人於 24 小時內完成（24 小時營業院所全天適用）。\n  </div>\n\n  <!-- 第一章 -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">第一章</span><span class=\"chap-t\">總則</span></div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 1 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">目的</div>\n        <p>Google 評論與星等是飼主選擇動物醫院時最先看到的資訊，也是各院所服務品質最直接的外部紀錄。本辦法明訂各院所監看與回覆評論之權責、時效與撰寫規範，使全體院所對外口徑一致、回應及時，並將飼主意見回饋至院內改善。</p>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 2 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">適用範圍</div>\n        <p>適用於慈愛動物醫院體系所有已建立 Google 商家檔案之單位，包含總院、店中院、迷你院與診所，以及美容、百貨等共用同一商家檔案之服務項目。</p>\n        <p>各院所同時經營之其他公開評論管道（Facebook 粉絲專頁評論、LINE 官方帳號留言），比照本辦法之撰寫規範與升級機制辦理，回覆時效另依各平台特性由管理處補充公告。</p>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 3 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">名詞定義</div>\n        <ol class=\"legal\">\n          <li><b>評論分級</b>：正評指 4〜5 星；中性指 3 星；負評指 1〜2 星。無文字之純星等評論，依星等歸類。</li>\n          <li><b>專責人</b>：各院所指派負責每日監看與撰寫回覆之人員，以櫃檯行政或客服人員為原則，需指定至少一名代理人。</li>\n          <li><b>紅線案件</b>：涉及醫療爭議、動物死亡、法律或訴訟威脅、媒體或網紅、疑似惡意集中攻擊之評論，詳第 12 條。</li>\n          <li><b>回覆率</b>：當月已回覆評論數 ÷ 當月新增評論數。</li>\n          <li><b>時效達成率</b>：當月符合第 8 條時效之回覆數 ÷ 當月已回覆評論數。</li>\n        </ol>\n      </div>\n    </div>\n  </section>\n\n  <!-- 第二章 -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">第二章</span><span class=\"chap-t\">權責分工</span></div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 4 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">各院所權責（評論回覆由院所全權負責）</div>\n        <p>各院所對其商家檔案之評論回覆負完全責任，管理處不代為回覆，僅辦理稽核、抽查與教育訓練。各崗位任務如下：</p>\n        <div class=\"tw\">\n          <table>\n            <thead><tr><th>崗位</th><th>任務</th><th>頻率／時效</th></tr></thead>\n            <tbody>\n              <tr>\n                <td><b>院長</b><br><span style=\"color:var(--ink-3);font-size:.8rem\">第一責任人</span></td>\n                <td>指派專責人與代理人；核可所有 1〜2 星負評回覆內容；紅線案件對管理處通報；月會檢視評論趨勢並提出院內改善。</td>\n                <td class=\"num\">負評核可 12H 內<br>月檢視 1 次</td>\n              </tr>\n              <tr>\n                <td><b>評論專責人</b><br><span style=\"color:var(--ink-3);font-size:.8rem\">櫃檯／行政</span></td>\n                <td>每日查看新評論；撰寫並送出回覆；負評先行查證事實（調閱病歷、詢問當班人員）後擬稿送院長；回填評論追蹤表。</td>\n                <td class=\"num\">每日 2 次<br>（開診後、班末）</td>\n              </tr>\n              <tr>\n                <td><b>當班主管／代理人</b></td>\n                <td>專責人休假或院長不在院時代行其職；公休日與夜間之負評由當班主管處理，確保 24 小時時效不中斷。</td>\n                <td class=\"num\">代理期間每日</td>\n              </tr>\n              <tr>\n                <td><b>當事醫護人員</b></td>\n                <td>接獲查證需求時，於 4 小時內就診療經過、溝通過程提供書面事實說明，不直接對外回覆或私下聯繫飼主。</td>\n                <td class=\"num\">4H 內回覆</td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n        <div class=\"note\">\n          <b>特殊單位責任歸屬：</b>未派任院長之迷你院（新莊旗艦、桃園大新、屏東自由、小北等）與暫時歇業單位（嘉義西區），其評論回覆由所屬區域總院（北總／中總／南總）院長代管並負核可之責；高雄分院醫療與百貨共用商家檔案，由院長與店長分別就醫療、百貨與美容項目之評論負責，回覆前互相知會。\n        </div>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 5 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">管理處行銷部權責</div>\n        <ul class=\"plain\">\n          <li>維護評論追蹤看板與月報，公布各院回覆率、時效達成率與星等變化。</li>\n          <li>每週抽查各院回覆內容至少 3 則，發現失言或不當回覆即時通知院長修正。</li>\n          <li>維護回覆話術庫與範本，每季更新；彙整優良回覆案例供全體院所參考。</li>\n          <li>受理各院檢舉不當評論之協助申請，統一向 Google 提出檢舉。</li>\n          <li>辦理新任專責人教育訓練與商家檔案權限盤點。</li>\n        </ul>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 6 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">醫療主管會辦</div>\n        <p>涉及診療判斷、用藥、手術結果或動物死亡之評論，院長於回覆前應與區域醫療主管（或指定之資深主治醫師）會辦，確認事實描述與說明用語無誤，再行回覆。會辦紀錄併同存於評論追蹤表。</p>\n      </div>\n    </div>\n  </section>\n\n  <!-- 第三章 -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">第三章</span><span class=\"chap-t\">作業流程</span></div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 7 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">每日作業流程</div>\n        <div class=\"flow\">\n          <div class=\"step\"><div class=\"dot\">1</div><div><div class=\"st\">查看｜每日 2 次</div><div class=\"sd\">專責人於<b>開診後 1 小時內</b>及<b>班末</b>，以 Google 商家檔案或 Google 地圖 App 檢視新評論；並確認手機通知已開啟，避免漏看。</div></div></div>\n          <div class=\"step\"><div class=\"dot\">2</div><div><div class=\"st\">分級</div><div class=\"sd\">依星等歸入正評、中性、負評或紅線案件，於評論追蹤表建立紀錄，填入評論時間與到期時間。</div></div></div>\n          <div class=\"step\"><div class=\"dot\">3</div><div><div class=\"st\">查證｜負評與中性評論必做</div><div class=\"sd\">依評論描述之日期、症狀或服務內容，比對當日病歷與掛號紀錄，向當班人員確認經過。<b>查證未完成不得回覆</b>，但不得因查證而超出時效——資訊不足時，先於時效內發出承接性回覆（見附錄 A・N5）。</div></div></div>\n          <div class=\"step\"><div class=\"dot\">4</div><div><div class=\"st\">擬稿與核可</div><div class=\"sd\">參照附錄 A 話術範本擬稿。<b>1〜2 星負評一律經院長核可</b>後才可送出；3 星以上由專責人逕行回覆。</div></div></div>\n          <div class=\"step\"><div class=\"dot\">5</div><div><div class=\"st\">送出與轉線下</div><div class=\"sd\">於時效內送出公開回覆，並在回覆中提供院內聯絡窗口，將個案細節轉為電話或私訊處理。屬服務或流程缺失者，同步提報院內改善。</div></div></div>\n          <div class=\"step\"><div class=\"dot\">6</div><div><div class=\"st\">回填與結案</div><div class=\"sd\">於評論追蹤表填入回覆時間、處理方式、是否已聯繫飼主與改善措施；<b>負評需追蹤至結案</b>（飼主已聯繫或已無後續）。</div></div></div>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 8 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">分級處理與回覆時效</div>\n        <div class=\"tw\">\n          <table>\n            <thead><tr><th>評論類型</th><th>回覆時效</th><th>核可層級</th><th>處理要點</th></tr></thead>\n            <tbody>\n              <tr><td><span class=\"pill p-neg\">1〜2 星</span> 有文字</td><td class=\"num\">24 小時</td><td>院長核可</td><td>查證事實 → 致歉並說明改善 → 留窗口轉線下 → 追蹤結案</td></tr>\n              <tr><td><span class=\"pill p-neg\">1〜2 星</span> 無文字</td><td class=\"num\">48 小時</td><td>專責人</td><td>簡短致意並邀請告知具體情形，不揣測原因</td></tr>\n              <tr><td><span class=\"pill p-mid\">3 星</span></td><td class=\"num\">48 小時</td><td>專責人</td><td>感謝並針對可改善之處具體回應，不辯解</td></tr>\n              <tr><td><span class=\"pill p-pos\">4〜5 星</span> 有文字</td><td class=\"num\">72 小時</td><td>專責人</td><td>回覆須提及評論中的具體內容，禁止罐頭複製</td></tr>\n              <tr><td><span class=\"pill p-pos\">4〜5 星</span> 無文字</td><td class=\"num\">7 日</td><td>專責人</td><td>可使用簡短標準感謝語</td></tr>\n              <tr><td><span class=\"pill p-gold\">紅線案件</span></td><td class=\"num\">2 小時通報</td><td>管理處＋醫療主管</td><td>先通報後回覆，未核准前不對外發言</td></tr>\n              <tr><td><span class=\"pill p-gold\">疑似不當評論</span></td><td class=\"num\">24 小時提報</td><td>管理處</td><td>依第 14、15 條提報檢舉，仍須先行公開回覆</td></tr>\n            </tbody>\n          </table>\n        </div>\n        <div class=\"note\"><b>已回覆之評論被追加或修改時</b>，視為新評論重新起算時效；同一飼主重複張貼多則者，僅回覆最新一則，其餘於追蹤表註記。</div>\n      </div>\n    </div>\n  </section>\n\n  <!-- 第四章 -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">第四章</span><span class=\"chap-t\">回覆撰寫規範</span></div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 9 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">回覆七不原則</div>\n        <ol class=\"legal\">\n          <li><b>不揭露診療資訊</b>：不得在公開回覆中提及動物姓名、品種、病名、檢驗數據、用藥、手術內容、就診日期或費用明細。飼主姓名、聯絡方式與診療內容之組合足以識別特定個人，屬個人資料保護法所規範之個人資料。</li>\n          <li><b>不爭辯醫療對錯</b>：不在公開平台論述診斷是否正確、責任歸屬或飼主是否配合醫囑，一律轉為線下說明。</li>\n          <li><b>不承諾金額</b>：不得於公開回覆中提及退費、賠償、免費療程或任何金額與條件。</li>\n          <li><b>不情緒回應</b>：不使用反問、質疑動機、指責飼主或影射不實之語句；不與留言者往來爭執。</li>\n          <li><b>不罐頭複製</b>：同一院所連續回覆不得使用完全相同之文字，正評回覆須回應評論提到的具體內容。</li>\n          <li><b>不個人署名</b>：以院所名義回覆，署名格式為「慈愛動物醫院○○分院　院所團隊」，不使用個人姓名或職稱。</li>\n          <li><b>不自行刪改</b>：不得要求飼主刪除或修改評論；不得以任何優惠、贈品或費用交換評論之張貼、修改或刪除（詳第 19 條）。</li>\n        </ol>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 10 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">回覆結構與字數</div>\n        <p>負評與中性評論之回覆採四段式，全文以 <span class=\"kbd\">80〜200 字</span>為原則：</p>\n        <div class=\"tw\">\n          <table>\n            <thead><tr><th>段落</th><th>作用</th><th>要點</th></tr></thead>\n            <tbody>\n              <tr><td class=\"num\">① 承接</td><td>感謝提出並表達重視</td><td>不用「很抱歉造成您的不便」之空泛句作為全文唯一致意</td></tr>\n              <tr><td class=\"num\">② 回應</td><td>就評論指出之「體驗」致歉或說明</td><td>只談流程與服務（候診、說明、態度、環境），不談診療內容</td></tr>\n              <tr><td class=\"num\">③ 行動</td><td>已採取或將採取之具體改善</td><td>寫得出來才寫，寧可具體而小，不做無法履行之承諾</td></tr>\n              <tr><td class=\"num\">④ 轉線下</td><td>提供聯絡窗口</td><td>載明院所電話或免付費專線 0800-002-066，邀請直接聯繫</td></tr>\n            </tbody>\n          </table>\n        </div>\n        <p>正評回覆以 <span class=\"kbd\">30〜80 字</span>為原則，須具名回應評論中提到的具體事項（如「謝謝您特別提到夜間急診的說明」）。</p>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 11 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">正誤對照</div>\n        <div class=\"dd\">\n          <div class=\"ddc bad\">\n            <h4>✕ 不當回覆</h4>\n            <div class=\"quote\">「您家的貓當天來已經是急性腎衰竭第四期，我們已建議住院但您堅持帶回，後續狀況並非本院責任。」</div>\n            <p style=\"margin-top:8px\">揭露病名與病程、公開推諉責任、指責飼主決定，同時觸犯第 9 條第 1、2、4 款。</p>\n          </div>\n          <div class=\"ddc good\">\n            <h4>○ 適當回覆</h4>\n            <div class=\"quote\">「謝謝您願意告訴我們您的感受，也對您與家人的心情感到不捨。關於當天病情說明與後續處理，我們希望能親自向您完整說明，已請院長主動與您聯繫，也歡迎您撥打 06-220-3166 由我們安排時間。」</div>\n            <p style=\"margin-top:8px\">表達重視、不論述病情、明確轉線下並指出負責層級。</p>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <!-- 第五章 -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">第五章</span><span class=\"chap-t\">升級與會辦</span></div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 12 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">紅線案件之通報</div>\n        <p>下列評論出現時，專責人應立即告知院長，並由院長於 <span class=\"kbd\">2 小時內</span>以電話加書面（LINE 群組或 Teams）通報管理處行銷部與區域醫療主管：</p>\n        <ol class=\"legal\">\n          <li>指控誤診、延誤、醫療過失，或涉及動物死亡、重大後遺症。</li>\n          <li>提及提告、訴訟、申訴至主管機關、動保團體或消保單位。</li>\n          <li>留言者為媒體、記者、網紅、社群意見領袖，或評論已被轉載至社群平台。</li>\n          <li>同一院所 <b>24 小時內出現 3 則以上 1〜2 星評論</b>，或內容雷同疑似惡意集中攻擊。</li>\n          <li>涉及員工個人指名指控、性別或人身攻擊、疑似非本院客戶之不實描述。</li>\n        </ol>\n        <div class=\"note\"><b>通報後在管理處回覆確認前，一律不對外發言</b>；亦不得刪除或隱藏任何院內紀錄。已張貼之回覆若判定不當，由院長於 2 小時內修正，並在追蹤表註記原文與修正原因。</div>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 13 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">通報內容</div>\n        <p>通報應包含：院所名稱、評論連結與截圖、評論時間與星等、留言者顯示名稱、已查證之事實摘要（就診日期、當班人員、經過）、擬回覆內容草稿、是否已與飼主聯繫。</p>\n      </div>\n    </div>\n  </section>\n\n  <!-- 第六章 -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">第六章</span><span class=\"chap-t\">不當評論之檢舉</span></div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 14 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">可提報檢舉之類型</div>\n        <p>依 Google 地圖使用者提供內容政策，下列評論可提出檢舉。<b>檢舉不代表一定移除，且不影響回覆義務</b>——仍須依第 8 條時效先行公開回覆。</p>\n        <ul class=\"plain\">\n          <li><b>非真實體驗</b>：未曾就診、代人張貼、業配或付費評論、同一內容重複張貼。</li>\n          <li><b>利益衝突</b>：競爭同業、離職員工或具契約關係者所張貼之評論。</li>\n          <li><b>離題內容</b>：與本院所服務體驗無關之抱怨、政治或社會議題發言。</li>\n          <li><b>個人資訊</b>：載有他人姓名、電話、地址、車牌、照片或醫療財務資訊。</li>\n          <li><b>騷擾與仇恨言論</b>：人身威脅、辱罵、歧視性語言。</li>\n          <li><b>不實指控</b>：無依據指控違法或不道德行為（如指稱虐待動物、非法用藥）。</li>\n          <li><b>廣告與招攬</b>：張貼他店資訊、聯絡方式或促銷內容。</li>\n        </ul>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 15 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">檢舉流程</div>\n        <ol class=\"legal\">\n          <li>專責人於發現後 24 小時內，截圖並填具檢舉提報單（附錄 B 之追蹤表，「疑似不當」欄位）送院長。</li>\n          <li>院長初判後轉管理處行銷部；管理處確認符合第 14 條類型者，由管理處統一向 Google 提出檢舉，並記錄提報日與結果。</li>\n          <li>檢舉期間不得動員員工、親友或飼主大量檢舉同一評論，亦不得以評論回覆功能公開指控留言者造假。</li>\n        </ol>\n      </div>\n    </div>\n  </section>\n\n  <!-- 第七章 -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">第七章</span><span class=\"chap-t\">稽核與績效指標</span></div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 16 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">追蹤表與回填義務</div>\n        <p>各院所應於每次處理後即時回填評論追蹤表（欄位見附錄 B），並於<b>每月 5 日前</b>完成上月結案確認。追蹤表為稽核與獎懲之唯一依據，未回填者視為未回覆。</p>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 17 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">管理處稽核方式</div>\n        <ul class=\"plain\">\n          <li><b>每週抽查</b>：每院至少 3 則已回覆評論，檢核時效、七不原則遵循度與內容品質（罐頭複製、錯字、未轉線下）。</li>\n          <li><b>每月月報</b>：公布各院回覆率、時效達成率、平均回覆時數、負評結案率、星等與評論數變化，於院長會議檢討。</li>\n          <li><b>不定期複核</b>：對曾發生失言或連續未達標之院所，加密抽查頻率至每週 6 則。</li>\n        </ul>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 18 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">績效指標與門檻</div>\n        <div class=\"tw\">\n          <table>\n            <thead><tr><th>指標</th><th>定義</th><th>目標</th><th>最低門檻</th></tr></thead>\n            <tbody>\n              <tr><td>回覆率</td><td>當月已回覆 ÷ 當月新增評論</td><td class=\"num\">100%</td><td class=\"num\">95%</td></tr>\n              <tr><td>時效達成率</td><td>符合第 8 條時效之回覆比率</td><td class=\"num\">≧ 95%</td><td class=\"num\">85%</td></tr>\n              <tr><td>負評平均回覆時數</td><td>1〜2 星評論之平均回覆時間</td><td class=\"num\">≦ 12H</td><td class=\"num\">24H</td></tr>\n              <tr><td>負評結案率</td><td>已聯繫飼主或已註記結案之比率</td><td class=\"num\">≧ 90%</td><td class=\"num\">80%</td></tr>\n              <tr><td>回覆品質</td><td>抽查未發現違反第 9 條之比率</td><td class=\"num\">100%</td><td class=\"num\">100%</td></tr>\n            </tbody>\n          </table>\n        </div>\n        <div class=\"note\"><b>不以星等與評論數作為主要考核指標。</b>星等受個案與地區差異影響，若以星等高低獎懲，將誘使院所以優惠換取好評或請求飼主刪評，違反第 19 條並可能導致商家檔案受 Google 處置。星等與評論數僅列為觀察值，供院內改善參考。</div>\n      </div>\n    </div>\n  </section>\n\n  <!-- 第八章 -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">第八章</span><span class=\"chap-t\">禁止行為</span></div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 19 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">絕對禁止事項</div>\n        <p>下列行為違反 Google 使用者提供內容政策或本體系規範，經查證屬實者依附錄 C 第四級議處：</p>\n        <ol class=\"legal\">\n          <li>以現金、折扣、贈品、免費療程或任何形式之報酬，交換評論之張貼、修改或刪除。</li>\n          <li>要求或暗示飼主刪除、修改已張貼之負面評論。</li>\n          <li>由員工、親友或以人頭帳號張貼虛假好評，或代客戶撰寫、代為張貼評論。</li>\n          <li>僅向滿意之飼主邀請評論，或以事先篩選方式影響評分（review gating）。</li>\n          <li>未經核准對外發布涉及醫療爭議之聲明，或於公開平台揭露飼主與動物之診療資訊。</li>\n          <li>擅自變更、移轉商家檔案擁有者權限，或將帳號權限交予非本體系人員。</li>\n        </ol>\n        <div class=\"note\"><b>允許之做法：</b>可在飼主完診離院時，以口頭或 QR Code 邀請「分享真實看診感受」，對象不分滿意與否、不附帶任何條件與贈品，亦不引導評分高低。</div>\n      </div>\n    </div>\n  </section>\n\n  <!-- 第九章 -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">第九章</span><span class=\"chap-t\">附則</span></div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 20 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">導入時程</div>\n        <div class=\"tw\">\n          <table>\n            <thead><tr><th>階段</th><th>期間</th><th>作業內容</th><th>時效標準</th></tr></thead>\n            <tbody>\n              <tr><td><b>準備期</b></td><td class=\"num\">生效前 2 週</td><td>各院回報專責人與代理人名單、盤點商家檔案權限、開啟評論通知、專責人線上訓練</td><td>不適用</td></tr>\n              <tr><td><b>試行期</b></td><td class=\"num\">第 1〜2 個月</td><td>依本辦法運作，管理處每週抽查並個別輔導；追蹤表全面回填</td><td>負評 48H／正評 5 個工作日；<b>不列入獎懲</b></td></tr>\n              <tr><td><b>正式期</b></td><td class=\"num\">第 3 個月起</td><td>時效標準與獎懲辦法同步生效，納入院所月度考核</td><td>負評 24H／中性 48H／正評 72H</td></tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"clause\">\n      <div class=\"cno\">第 21 條</div>\n      <div class=\"cbody\">\n        <div class=\"ct\">修訂與生效</div>\n        <p>本辦法經總經理核定後公布施行，修訂時亦同。附錄 A 話術範本由管理處行銷部視實務需要逕行更新，不須重新核定。各院所對條文有疑義或執行困難者，得於試行期內以書面向管理處行銷部提出。</p>\n      </div>\n    </div>\n  </section>\n\n  <!-- 附錄 A -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">附錄 A</span><span class=\"chap-t\">回覆話術範本</span></div>\n    <div class=\"clause\" style=\"grid-template-columns:1fr;border-bottom:0;padding-bottom:0\">\n      <div class=\"cbody\" style=\"max-width:none\">\n        <p style=\"max-width:66ch\">範本為起稿基礎，<b>必須依個案改寫</b>，尤其須置入評論中的具體事項。方括號為必填欄位。</p>\n\n        <div class=\"scripts\">\n          <div class=\"sc\" style=\"--c:var(--pos)\">\n            <div class=\"sc-h\"><span class=\"t\">P1・五星有文字（指名某位人員或項目）</span><span class=\"sit\">72 小時內</span></div>\n            <div class=\"sc-body\">謝謝您撥時間分享，也特別謝謝您提到［評論具體內容，如「夜間急診時的說明」］。您的回饋我們已轉達給當天值班的同仁，這對團隊是很大的鼓勵。期待再次照顧［寶貝／您的毛孩］。\n慈愛動物醫院［○○］分院　院所團隊</div>\n            <div class=\"sc-tip\">禁止只寫「感謝您的評論」；至少引用評論中一項具體內容。</div>\n          </div>\n\n          <div class=\"sc\" style=\"--c:var(--pos)\">\n            <div class=\"sc-h\"><span class=\"t\">P2・五星無文字</span><span class=\"sit\">7 日內</span></div>\n            <div class=\"sc-body\">謝謝您給予五星肯定，我們會持續把每一次看診做好。若有任何需要，歡迎隨時與我們聯繫。\n慈愛動物醫院［○○］分院　院所團隊</div>\n          </div>\n\n          <div class=\"sc\" style=\"--c:#7A4E12\">\n            <div class=\"sc-h\"><span class=\"t\">M1・三星（有具體建議）</span><span class=\"sit\">48 小時內</span></div>\n            <div class=\"sc-body\">謝謝您把［評論提到的問題］告訴我們，這確實是我們需要改善的地方。我們已［具體改善作法，如「調整下午時段的掛號人數上限」］，也會持續追蹤成效。若還有其他想讓我們知道的，歡迎撥打［院所電話］。\n慈愛動物醫院［○○］分院　院所團隊</div>\n            <div class=\"sc-tip\">三星回覆最常見的錯誤是辯解。只寫「我們理解＋我們做了什麼」。</div>\n          </div>\n\n          <div class=\"sc\" style=\"--c:#9A0F22\">\n            <div class=\"sc-h\"><span class=\"t\">N1・候診時間過長</span><span class=\"sit\">24 小時內・院長核可</span></div>\n            <div class=\"sc-body\">謝謝您提出來，讓您等候這麼久，我們很抱歉。當天［簡述客觀狀況，如「急診同時進來兩例重症」］，但這不該讓您在現場沒有得到清楚的說明。我們已［具體作法，如「請櫃檯於候診超過 30 分鐘時主動告知進度」］。若您願意，歡迎撥打［院所電話］由我們了解當天的完整情形。\n慈愛動物醫院［○○］分院　院所團隊</div>\n          </div>\n\n          <div class=\"sc\" style=\"--c:#9A0F22\">\n            <div class=\"sc-h\"><span class=\"t\">N2・費用疑慮</span><span class=\"sit\">24 小時內・院長核可</span></div>\n            <div class=\"sc-body\">謝謝您的回饋。費用的說明如果沒有讓您在事前清楚了解，是我們的疏失。我們已請同仁在檢查與治療前主動提供項目與費用說明。關於您這次的明細，涉及個別紀錄不便在此討論，歡迎撥打［院所電話］或免付費專線 0800-002-066，由我們逐項向您說明。\n慈愛動物醫院［○○］分院　院所團隊</div>\n            <div class=\"sc-tip\">絕對不得提及金額、折扣或退費可能性。</div>\n          </div>\n\n          <div class=\"sc\" style=\"--c:#9A0F22\">\n            <div class=\"sc-h\"><span class=\"t\">N3・服務態度</span><span class=\"sit\">24 小時內・院長核可</span></div>\n            <div class=\"sc-body\">謝謝您告訴我們這次的經驗。不論當天情況如何，讓您感到不被尊重就是我們沒有做好，我們向您道歉。院內已就這次的溝通方式與同仁檢討並加強教育訓練。也希望能有機會親自向您說明與致意，歡迎撥打［院所電話］。\n慈愛動物醫院［○○］分院　院所團隊</div>\n            <div class=\"sc-tip\">不指名同仁、不說明是誰、不描述「當事人記憶與您不同」。</div>\n          </div>\n\n          <div class=\"sc\" style=\"--c:#9A0F22\">\n            <div class=\"sc-h\"><span class=\"t\">N4・醫療結果爭議／動物死亡</span><span class=\"sit\">先通報，核准後回覆</span></div>\n            <div class=\"sc-body\">看到您的留言，我們對［寶貝］的離開深感不捨，也謝謝您願意讓我們知道您的感受。診療過程涉及個別紀錄，不適合在公開平台討論，我們希望能親自向您完整說明。已請院長主動與您聯繫，也歡迎您撥打［院所電話］由我們安排時間。\n慈愛動物醫院［○○］分院　院所團隊</div>\n            <div class=\"sc-tip\">須經第 12 條通報並與醫療主管會辦後方可送出。不論述病情、不評價處置、不提責任歸屬。</div>\n          </div>\n\n          <div class=\"sc\" style=\"--c:#9A0F22\">\n            <div class=\"sc-h\"><span class=\"t\">N5・查證未完成之承接回覆</span><span class=\"sit\">用於時效將屆而事實未明</span></div>\n            <div class=\"sc-body\">謝謝您的留言，我們非常重視您提到的情形，目前正在了解當天的經過。為能給您完整的回覆，想請您撥打［院所電話］或留下方便聯繫的時間，由我們主動與您聯繫說明。\n慈愛動物醫院［○○］分院　院所團隊</div>\n            <div class=\"sc-tip\">此範本用於「守住時效但事實未明」，送出後仍須完成查證與結案追蹤。</div>\n          </div>\n\n          <div class=\"sc\" style=\"--c:var(--gold)\">\n            <div class=\"sc-h\"><span class=\"t\">X1・疑似非本院客戶或內容不符</span><span class=\"sit\">24 小時內・院長核可＋併同提報檢舉</span></div>\n            <div class=\"sc-body\">謝謝您的留言。我們已查看近期的看診紀錄，未能對應到您所描述的情形，擔心是否有其他院所或時間上的誤會。若您願意，歡迎撥打［院所電話］讓我們了解，若確有疏失，我們一定負責處理。\n慈愛動物醫院［○○］分院　院所團隊</div>\n            <div class=\"sc-tip\">不得公開指稱對方造假、非本院客戶或惡意攻擊；語氣保持開放，檢舉另循第 15 條流程。</div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <!-- 附錄 B -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">附錄 B</span><span class=\"chap-t\">評論追蹤表欄位</span></div>\n    <div class=\"clause\" style=\"grid-template-columns:1fr;border-bottom:0\">\n      <div class=\"cbody\" style=\"max-width:none\">\n        <div class=\"tw\">\n          <table>\n            <thead><tr><th>欄位</th><th>填寫者</th><th>說明</th></tr></thead>\n            <tbody>\n              <tr><td>院所／區域</td><td>專責人</td><td>依營業資訊表之院別名稱</td></tr>\n              <tr><td>評論日期時間</td><td>專責人</td><td>Google 顯示之張貼時間，時效起算基準</td></tr>\n              <tr><td>星等</td><td>專責人</td><td>1〜5</td></tr>\n              <tr><td>評論分類</td><td>專責人</td><td>候診／費用／服務態度／醫療結果／環境設施／美容／百貨／其他</td></tr>\n              <tr><td>評論摘要與連結</td><td>專責人</td><td>30 字內摘要＋評論連結或截圖</td></tr>\n              <tr><td>到期時間</td><td>系統公式</td><td>依第 8 條自動計算</td></tr>\n              <tr><td>查證結果</td><td>專責人</td><td>就診日、當班人員、經過事實（內部用，不對外）</td></tr>\n              <tr><td>回覆草稿</td><td>專責人</td><td>負評須留存核可前版本</td></tr>\n              <tr><td>核可人／核可時間</td><td>院長</td><td>1〜2 星必填</td></tr>\n              <tr><td>回覆時間</td><td>專責人</td><td>公開回覆送出時間</td></tr>\n              <tr><td>時效達成</td><td>系統公式</td><td>回覆時間 − 到期時間</td></tr>\n              <tr><td>是否已聯繫飼主</td><td>專責人</td><td>是／否／無法聯繫</td></tr>\n              <tr><td>院內改善措施</td><td>院長</td><td>屬流程或服務缺失者必填</td></tr>\n              <tr><td>疑似不當／檢舉狀態</td><td>專責人</td><td>類型（第 14 條）／提報日／Google 處理結果</td></tr>\n              <tr><td>紅線通報</td><td>院長</td><td>通報時間、通報對象、會辦結果</td></tr>\n              <tr><td>結案狀態</td><td>院長</td><td>結案／追蹤中</td></tr>\n            </tbody>\n          </table>\n        </div>\n        <div class=\"note\">追蹤表以 Google 試算表或 Excel 建置，由管理處提供統一格式，含到期時間與時效達成之公式，並自動彙整至月報看板。</div>\n      </div>\n    </div>\n  </section>\n\n  <!-- 附錄 C -->\n  <section class=\"chap\">\n    <div class=\"chap-h\"><span class=\"chap-n\">附錄 C</span><span class=\"chap-t\">獎懲辦法<span class=\"stamp\">草案・待人資與總經理核定</span></span></div>\n    <div class=\"clause\" style=\"grid-template-columns:1fr;border-bottom:0\">\n      <div class=\"cbody\" style=\"max-width:none\">\n        <p style=\"max-width:66ch\">本附錄之獎懲自正式期（第 3 個月）起適用，試行期僅列輔導不議處。獎懲以評論追蹤表與管理處稽核紀錄為依據，按月結算、按季核發。</p>\n\n        <div style=\"font-family:var(--serif);font-weight:700;margin:22px 0 6px;color:var(--pos);letter-spacing:.06em\">一、獎勵</div>\n        <div class=\"tw\">\n          <table>\n            <thead><tr><th>項目</th><th>條件</th><th>週期</th><th>建議額度</th></tr></thead>\n            <tbody>\n              <tr><td><b>口碑達標院所</b></td><td>回覆率 100% 且時效達成率 ≧ 95%，抽查無違反第 9 條</td><td>每月</td><td>院所團隊獎金／餐敘補助，院長會議公開表揚</td></tr>\n              <tr><td><b>負評修復案例獎</b></td><td>1〜2 星案件經聯繫後飼主自行追加正面說明、修改評分，或轉為回診客</td><td>每案</td><td>個人獎勵，經辦人員記嘉獎一次</td></tr>\n              <tr><td><b>優良回覆案例</b></td><td>回覆內容經管理處採用納入話術庫</td><td>每案</td><td>撰稿人記嘉獎，案例署名院所</td></tr>\n              <tr><td><b>季度口碑進步獎</b></td><td>負評平均回覆時數改善幅度全體前三名</td><td>每季</td><td>院所獎金</td></tr>\n            </tbody>\n          </table>\n        </div>\n        <div class=\"note\">獎勵一律以「回覆率、時效、品質」為條件，<b>不設任何以星等或評論數量為條件之獎項</b>，避免誘發不當索評（第 19 條）。</div>\n\n        <div style=\"font-family:var(--serif);font-weight:700;margin:26px 0 6px;color:#9A0F22;letter-spacing:.06em\">二、懲處分級</div>\n        <div class=\"tw\">\n          <table>\n            <thead><tr><th>級別</th><th>事由</th><th>處置</th></tr></thead>\n            <tbody>\n              <tr>\n                <td><span class=\"pill p-mid\">第一級</span><br>提醒</td>\n                <td>單月逾時 1〜2 則；追蹤表欄位漏填；回覆有錯字或未署名</td>\n                <td>管理處通知院長，48 小時內補正並回報</td>\n              </tr>\n              <tr>\n                <td><span class=\"pill p-mid\">第二級</span><br>書面警告</td>\n                <td>單月逾時 ≧ 3 則、回覆率 &lt; 95%、時效達成率 &lt; 85%，或連續兩個月列第一級</td>\n                <td>院長提出書面改善計畫，加密抽查一個月；當月不得參與獎勵評選</td>\n              </tr>\n              <tr>\n                <td><span class=\"pill p-neg\">第三級</span><br>失言議處</td>\n                <td>公開回覆中與飼主爭辯、指責飼主、揭露診療或個人資料、承諾金額、情緒性或不當用語、未經核可逕自回覆負評</td>\n                <td>撰稿人與核可人依人事規章議處（申誡起）；院所當季不得參與獎勵評選；全體專責人重新受訓</td>\n              </tr>\n              <tr>\n                <td><span class=\"pill p-neg\">第四級</span><br>重大違規</td>\n                <td>違反第 19 條任一款；紅線案件未於 2 小時內通報且已造成擴散；擅自對外發布涉醫療爭議之聲明</td>\n                <td>移送人資依人事規章議處，院長負連帶督導責任；情節重大者依相關規定處理</td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n\n        <div style=\"font-family:var(--serif);font-weight:700;margin:26px 0 6px;color:var(--ink-3);letter-spacing:.06em\">三、免責與申訴</div>\n        <ul class=\"plain\">\n          <li>因 Google 平台故障、通知未送達且有截圖佐證、商家檔案權限異常等不可歸責事由致逾時者，經管理處查證後不予計列。</li>\n          <li>紅線案件在管理處回覆確認前之等待時間，不計入時效。</li>\n          <li>院所對稽核結果有異議者，得於月報公布後 5 個工作日內檢附追蹤表紀錄向管理處申訴。</li>\n        </ul>\n      </div>\n    </div>\n  </section>\n\n  <div class=\"foot\">\n    慈愛生物科技股份有限公司　管理處行銷部擬訂　MKT-SOP-2026-01　v1.0 草案<br>\n    引用依據：Google 地圖使用者提供內容政策（禁止不實內容、利益衝突、離題、個人資訊、騷擾、廣告，及禁止以報酬交換評論之張貼、修改或刪除）；個人資料保護法關於個人資料蒐集、處理與利用之規範。\n  </div>\n</div>";
+
 /* ══════════════════════════════════════════════════════════
    介面骨架
    ══════════════════════════════════════════════════════════ */
@@ -863,6 +937,10 @@ function buildNav(){
       +'<span class="nm">'+g.name+'<span class="sub">均分 '+a.avg.toFixed(2)+'</span></span>'
       +'<span class="ct">'+g.clinics.length+'</span></div>';
   });
+  h+='<div class="nav-rule"></div><div class="nav-sec">作業規範</div>';
+  h+='<div class="nav-item" id="nv-sop" onclick="showView(\'sop\')">'
+    +'<span class="nav-bar" style="background:var(--gold)"></span>'
+    +'<span class="nm">評論回覆作業辦法<span class="sub">MKT-SOP-2026-01</span></span></div>';
   h+='<div class="nav-rule"></div><div class="nav-sec">資料維護</div>';
   h+='<div class="nav-item" id="nv-sync" onclick="showView(\'sync\')">'
     +'<span class="nav-bar" style="background:var(--brand)"></span><span class="nm">同步 Google 評分</span></div>';
@@ -950,6 +1028,7 @@ function showView(view,gid){
   else if(view==='pending')  renderPending(m);
   else if(view==='report')   renderReport(m);
   else if(view==='conclusion')renderConclusion(m);
+  else if(view==='sop')      renderSop(m);
   else if(view==='sync')     renderSync(m);
   else if(view==='settings') renderSettings(m);
   updateHeader();
@@ -1805,6 +1884,58 @@ function renderConclusion(el){
    +'因此建議的比較方式是<b>同型態互比</b>：總院跟總院比、店中院跟店中院比。'
    +'全院拉一條平均線，會把「型態本來就辛苦」和「這間真的有問題」混在一起。</div></div>';
 
+  /* ── 分母效應：要把評分拉到目標值，需要幾則 5 星 ──
+     算式：(現有總星數 + 5x) / (現有則數 + x) = 目標分
+     現有總星數 = 評分 × 則數（Google 的評分是算術平均）
+     這是純數學推算，不是預測，也沒有任何假設數字。          */
+  function starsNeeded(c, target){
+    var cur = c.rating * c.count;
+    var n = (target * c.count - cur) / (5 - target);
+    return n <= 0 ? 0 : Math.ceil(n);
+  }
+  var lowOnes = all.filter(function(c){return c.rating < 4.3;})
+                   .sort(function(a,b){return a.rating-b.rating;});
+  if(lowOnes.length){
+    h+=sect('分母效應','要把評分拉上來，需要多少則新的 5 星評論');
+    h+='<div class="note"><strong>回覆負評不會讓分數上升，只會避免它繼續下降。</strong><br>'
+     +'Google 的評分是所有評論的算術平均，累積則數越多，單則新評論的影響力越小。'
+     +'下表是純數學推算：在現有評分與則數的基礎上，要達到各個目標分數，'
+     +'分別需要再累積多少則 5 星評論（假設期間內沒有新的負評）。</div>';
+    h+='<div class="tbl"><table><thead><tr><th>院所</th><th class="num">目前評分</th>'
+     +'<th class="num">目前則數</th><th class="num">要到 4.0</th><th class="num">要到 4.3</th>'
+     +'<th class="num">要到 4.5</th></tr></thead><tbody>';
+    lowOnes.forEach(function(c){
+      h+='<tr><td class="nm">'+esc(c.full||c.name)+'<div class="sm">'+esc(c.group.name)+'</div></td>'
+       +'<td class="num" style="font-weight:900;color:'+scoreColor(c.rating)+'">'+c.rating.toFixed(1)+'</td>'
+       +'<td class="num">'+c.count.toLocaleString()+'</td>'
+       +'<td class="num">'+(c.rating>=4.0?'<span class="sm">已達成</span>':starsNeeded(c,4.0).toLocaleString()+' 則')+'</td>'
+       +'<td class="num">'+(c.rating>=4.3?'<span class="sm">已達成</span>':starsNeeded(c,4.3).toLocaleString()+' 則')+'</td>'
+       +'<td class="num">'+(c.rating>=4.5?'<span class="sm">已達成</span>':starsNeeded(c,4.5).toLocaleString()+' 則')+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+    var worst=lowOnes[0];
+    var need=starsNeeded(worst,4.0);
+    var recent=(function(){
+      var sn=getSnapshots();
+      if(sn.length<2) return null;
+      var a=sn[0], b=sn[sn.length-1];
+      var da=a.data[worst.placeId], db=b.data[worst.placeId];
+      if(!da||!db) return null;
+      var days=Math.round((new Date(b.date)-new Date(a.date))/86400000);
+      return days>0 ? {gain:db.count-da.count, days:days} : null;
+    })();
+    h+='<div class="note warn">以 '+esc(worst.full||worst.name)+' 為例，要從 '+worst.rating.toFixed(1)
+     +' 分拉到 4.0，需要再累積 <strong>'+need.toLocaleString()+' 則 5 星評論</strong>。';
+    if(recent && recent.gain>0){
+      var perMonth = recent.gain / recent.days * 30;
+      h+='而它最近 '+recent.days+' 天實際只增加 '+recent.gain+' 則評論（約每月 '+perMonth.toFixed(1)+' 則）。'
+       +'照這個速度，即使每一則都是 5 星，也要 <strong>'+Math.round(need/perMonth)+' 個月</strong>。';
+    }
+    h+='<br>所以總院組的分數不是靠回覆評論就能改善的。'
+     +'真正的槓桿有兩個：<strong>一是止住新的負評</strong>（改善等候與溝通），'
+     +'<strong>二是主動邀請滿意的顧客留評</strong>，把分母做大。</div>';
+  }
+
   h+=sect('四象限','以均分 '+avg.toFixed(2)+' 分、均量 '+Math.round(avgCount)+' 則為分界');
   h+='<div class="tri" style="grid-template-columns:repeat(2,1fr)">';
   [
@@ -1881,6 +2012,29 @@ function renderConclusion(el){
       backgroundColor:['#CF102DCC','#F3661FCC','#C2811ECC','#8FA86BCC','#2F6B4FCC','#5D2F2ACC'],borderWidth:0}]},
       {plugins:{legend:{display:false}},scales:{y:{ticks:{precision:0}}}});
   },60);
+}
+
+/* ══════════════════════════════════════════════════════════
+   評論回覆作業辦法
+   ══════════════════════════════════════════════════════════ */
+function renderSop(el){
+  var h=pageHead('作業規範','Google 評論回覆作業辦法',
+    '管理處行銷部擬訂的正式辦法（MKT-SOP-2026-01　v1.0 草案）。'
+    +'下方為完整條文，共八章十九條與三份附錄。');
+
+  /* 把辦法裡的時效規定，對上系統目前的實際設定，讓兩邊不會各說各話 */
+  var thr=(LIVE&&LIVE.instantThreshold)||3;
+  var remind=(LIVE&&LIVE.remindHours)||48;
+  h+='<div class="note"><strong>辦法與系統設定的對應</strong><br>'
+   +'辦法第 8 條規定 1〜2 星須於 <b>24 小時</b>內回覆、3 星 <b>48 小時</b>、4〜5 星 <b>72 小時</b>。<br>'
+   +'目前排程器的設定是：<b>'+thr+' 星以下</b>即時寄出通知，未回覆滿 <b>'+remind+' 小時</b>寄出催辦。'
+   +(remind>24 ? '<br><span style="color:#9A0F22;font-weight:700">催辦門檻（'+remind+' 小時）比辦法要求的負評時效（24 小時）寬</span>，'
+       +'若要與辦法一致，把 <code>REMIND_HOURS</code> 改成 <code>"12"</code>，'
+       +'讓催辦在時效到期前就發出。' : '')
+   +'</div>';
+
+  h+='<div class="sop">'+SOP_HTML+'</div>';
+  el.innerHTML=h;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -1998,8 +2152,10 @@ function renderSettings(el){
 
   h+=sect('資料來源與計算方式');
   h+='<div class="panel" style="font-size:.78rem;line-height:1.95;max-width:960px">';
-  h+='<p><b>基準資料</b>　'+fmtDate(BASE_SNAPSHOT_DATE)+' 以 '+esc(BASE_SNAPSHOT_SOURCE)
-   +' 實際查詢 14 間院所所得的評分與評論數，沒有任何推估。</p>';
+  h+='<p><b>基準資料</b>　系統內建 '+BUILTIN_SNAPSHOTS.length+' 筆歷史快照：'
+   +BUILTIN_SNAPSHOTS.map(function(x){return fmtDate(x.date);}).join('、')
+   +'。每一筆都是在該日期以 Google Places 逐間實際查詢所得，'
+   +'<b>沒有任何推估、內插或補值</b>。「評分變化」頁的趨勢圖就是用這四個真實時間點畫的。</p>';
   h+='<p style="margin-top:11px"><b>即時評論</b>　點各院「抓取即時評論」時才向 Google 查詢。'
    +'評論內容、關鍵字次數、情感分布全部由抓到的文字計算，沒有預先寫死的文案。</p>';
   h+='<p style="margin-top:11px"><b>卡片上的正／中／負長條</b>　由星等推估的示意值，不是實際評論統計。'
